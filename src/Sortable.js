@@ -3,52 +3,53 @@ import PropTypes from 'prop-types';
 import './Draggable.css';
 
 
-class Draggable {
+function Draggable(element, props) {
 
-    constructor(element, props) {
-        this.element = element;
-        this.props = props;
-    }
+    return {
 
-    element() {
-        return this.element;
-    }
+        get element() {
+            return element
+        },
 
-    animateGrasp() {
-        const { element, props } = this;
-        element.style.zIndex = 999;
-        element.style.position = 'relative';
-        element.style.transition = transitions.grasp;
-        element.classList.add(this.props.dragClassName);
-        props.raised && element.classList.add('shadow');
-    }
+        get props() {
+            return props
+        },
 
-    async moveIntoPlace() {
-        const { element } = this;
-        // if (!currentPosition)
-        //     return Promise.resolve();
-        const event = fireAndForget(element, "transitionend");
-        element.style.transition = transitions.moveIntoPlace;
-        element.style.transform = null;
-        await event;
-        return event;
-    }
+        grasp() {
+            element.style.zIndex = 999;
+            element.style.position = 'relative';
+            element.style.transition = transitions.grasp;
+            element.classList.add(props.dragClassName);
+            props.raised && element.classList.add('shadow');
+        },
 
-    async settleIntoPlace() {
-        const { element, props } = this;
-        const event = fireAndForget(element, "transitionend");
-        element.classList.remove(props.dragClassName);
-        element.classList.remove('shadow');
-        element.style.transition = transitions.settleIntoPlace;
-        await event;
-        element.style.transition = null;
-    }
+        async moveIntoPlace() {
+            const { element } = this;
+            // if (!currentPosition)
+            //     return Promise.resolve();
+            const event = fireAndForget(element, "transitionend");
+            element.style.transition = transitions.moveIntoPlace;
+            element.style.transform = null;
+            await event;
+            return event;
+        },
 
-    async animateRelease() {
-        const { element } = this;
-        await this.moveIntoPlace(element);
-        this.settleIntoPlace(element);
-        element.style.zIndex = 0;
+        async settleIntoPlace() {
+            const { element, props } = this;
+            const event = fireAndForget(element, "transitionend");
+            element.classList.remove(props.dragClassName);
+            element.classList.remove('shadow');
+            element.style.transition = transitions.settleIntoPlace;
+            await event;
+            element.style.transition = null;
+        },
+
+        async release() {
+            const { element } = this;
+            await this.moveIntoPlace();
+            this.settleIntoPlace();
+            element.style.zIndex = 0;
+        }
     }
 }
 
@@ -66,9 +67,7 @@ export default function Sortable(props) {
     function onTouchStart(e) {
         e.stopPropagation();
         draggable = new Draggable(e.target, props);
-        // console.log(draggable.position);
-        // console.log(draggable.style);
-        draggable.animateGrasp(draggable);
+        draggable.grasp(draggable);
         startPosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
         props.onGrasp && props.onGrasp();
     }
@@ -83,7 +82,7 @@ export default function Sortable(props) {
 
     const onTouchEnd = e => {
         e.stopPropagation();
-        draggable.animateRelease(draggable);
+        draggable.release(draggable);
         props.onDrop && props.onDrop();
     }
 
