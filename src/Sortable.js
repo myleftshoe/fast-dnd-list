@@ -11,57 +11,62 @@ export default function Sortable(props) {
         y: y - startPosition.y,
     });
 
-    const animateGrasp = target => {
-        target.style.zIndex = 999;
-        target.style.position = 'relative';
-        target.style.transition = transitions.grasp;
-        target.classList.add(props.dragClassName);
-        props.raised && target.classList.add('shadow');
+    let draggable;
+
+    function animateGrasp() {
+        draggable.style.zIndex = 999;
+        draggable.style.position = 'relative';
+        draggable.style.transition = transitions.grasp;
+        draggable.classList.add(props.dragClassName);
+        props.raised && draggable.classList.add('shadow');
     }
 
-    const onTouchStart = e => {
+    function onTouchStart(e) {
         e.stopPropagation();
-        animateGrasp(e.target);
+        draggable = e.target;
+        // console.log(draggable.position);
+        // console.log(draggable.style);
+        animateGrasp(draggable);
         startPosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
         props.onGrasp && props.onGrasp();
     }
 
-    const onTouchMove = e => {
+    function onTouchMove(e) {
         e.stopPropagation();
         currentPosition = {x: e.touches[0].clientX, y: e.touches[0].clientY}
         const { x, y } = getTotalMovement(currentPosition);
-        e.target.style.transform = `translate(${x}px,${y}px)`;
+        draggable.style.transform = `translate(${x}px,${y}px)`;
         props.Drag && props.onDrag();
     }
 
-    const moveIntoPlace = async target => {
+    async function moveIntoPlace() {
         if (!currentPosition)
             return Promise.resolve();
-        const event = fireAndForget(target, "transitionend");
-        target.style.transition = transitions.moveIntoPlace;
-        target.style.transform = null;
+        const event = fireAndForget(draggable, "transitionend");
+        draggable.style.transition = transitions.moveIntoPlace;
+        draggable.style.transform = null;
         await event;
         return event;
     }
 
-    const settleIntoPlace = async target => {
-        const event = fireAndForget(target, "transitionend");
-        target.classList.remove(props.dragClassName);
-        target.classList.remove('shadow');
-        target.style.transition = transitions.settleIntoPlace;
+    async function settleIntoPlace() {
+        const event = fireAndForget(draggable, "transitionend");
+        draggable.classList.remove(props.dragClassName);
+        draggable.classList.remove('shadow');
+        draggable.style.transition = transitions.settleIntoPlace;
         await event;
-        target.style.transition = null;
+        draggable.style.transition = null;
     }
 
-    const animateRelease = async target => {
-        await moveIntoPlace(target);
-        settleIntoPlace(target);
-        target.style.zIndex = 0;
+    async function animateRelease() {
+        await moveIntoPlace(draggable);
+        settleIntoPlace(draggable);
+        draggable.style.zIndex = 0;
     };
 
     const onTouchEnd = e => {
         e.stopPropagation();
-        animateRelease(e.target);
+        animateRelease(draggable);
         props.onDrop && props.onDrop();
     }
 
