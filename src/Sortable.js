@@ -2,71 +2,88 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './Draggable.css';
 
+
+class Draggable {
+
+    constructor(element, props) {
+        this.element = element;
+        this.props = props;
+    }
+
+    element() {
+        return this.element;
+    }
+
+    animateGrasp() {
+        const { element, props } = this;
+        element.style.zIndex = 999;
+        element.style.position = 'relative';
+        element.style.transition = transitions.grasp;
+        element.classList.add(this.props.dragClassName);
+        props.raised && element.classList.add('shadow');
+    }
+
+    async moveIntoPlace() {
+        const { element } = this;
+        // if (!currentPosition)
+        //     return Promise.resolve();
+        const event = fireAndForget(element, "transitionend");
+        element.style.transition = transitions.moveIntoPlace;
+        element.style.transform = null;
+        await event;
+        return event;
+    }
+
+    async settleIntoPlace() {
+        const { element, props } = this;
+        const event = fireAndForget(element, "transitionend");
+        element.classList.remove(props.dragClassName);
+        element.classList.remove('shadow');
+        element.style.transition = transitions.settleIntoPlace;
+        await event;
+        element.style.transition = null;
+    }
+
+    async animateRelease() {
+        const { element } = this;
+        await this.moveIntoPlace(element);
+        this.settleIntoPlace(element);
+        element.style.zIndex = 0;
+    }
+}
+
 export default function Sortable(props) {
 
     let startPosition, currentPosition;
 
-    const getTotalMovement = ({x, y}) => ({
+    const getTotalMovement = ({ x, y }) => ({
         x: x - startPosition.x,
         y: y - startPosition.y,
     });
 
     let draggable;
 
-    function animateGrasp() {
-        draggable.style.zIndex = 999;
-        draggable.style.position = 'relative';
-        draggable.style.transition = transitions.grasp;
-        draggable.classList.add(props.dragClassName);
-        props.raised && draggable.classList.add('shadow');
-    }
-
     function onTouchStart(e) {
         e.stopPropagation();
-        draggable = e.target;
+        draggable = new Draggable(e.target, props);
         // console.log(draggable.position);
         // console.log(draggable.style);
-        animateGrasp(draggable);
+        draggable.animateGrasp(draggable);
         startPosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
         props.onGrasp && props.onGrasp();
     }
 
     function onTouchMove(e) {
         e.stopPropagation();
-        currentPosition = {x: e.touches[0].clientX, y: e.touches[0].clientY}
+        currentPosition = { x: e.touches[0].clientX, y: e.touches[0].clientY }
         const { x, y } = getTotalMovement(currentPosition);
-        draggable.style.transform = `translate(${x}px,${y}px)`;
+        draggable.element.style.transform = `translate(${x}px,${y}px)`;
         props.Drag && props.onDrag();
     }
 
-    async function moveIntoPlace() {
-        if (!currentPosition)
-            return Promise.resolve();
-        const event = fireAndForget(draggable, "transitionend");
-        draggable.style.transition = transitions.moveIntoPlace;
-        draggable.style.transform = null;
-        await event;
-        return event;
-    }
-
-    async function settleIntoPlace() {
-        const event = fireAndForget(draggable, "transitionend");
-        draggable.classList.remove(props.dragClassName);
-        draggable.classList.remove('shadow');
-        draggable.style.transition = transitions.settleIntoPlace;
-        await event;
-        draggable.style.transition = null;
-    }
-
-    async function animateRelease() {
-        await moveIntoPlace(draggable);
-        settleIntoPlace(draggable);
-        draggable.style.zIndex = 0;
-    };
-
     const onTouchEnd = e => {
         e.stopPropagation();
-        animateRelease(draggable);
+        draggable.animateRelease(draggable);
         props.onDrop && props.onDrop();
     }
 
@@ -79,6 +96,8 @@ export default function Sortable(props) {
         {props.children}
     </div>
 }
+
+//------------------------------------------------------------------------------
 
 Sortable.propTypes = {
     onGrasp: PropTypes.func,
