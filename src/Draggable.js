@@ -20,7 +20,6 @@ export default function Draggable(element, props) {
     return {
 
         get element() { return element },
-        get props() { return props },
 
         set position([x, y]) {
             currentPosition = [x, y];
@@ -28,7 +27,6 @@ export default function Draggable(element, props) {
                 startPosition = currentPosition;
             const [_x, _y] = getTotalMovement(currentPosition);
             element.style.transform = `translate(${_x}px,${_y}px)`;
-
         },
 
         get position() {
@@ -45,7 +43,6 @@ export default function Draggable(element, props) {
         },
 
         async moveIntoPlace() {
-            const { element } = this;
             if (currentPosition === startPosition)
                 return Promise.resolve();
             const event = fireAndForget(element, "transitionend");
@@ -56,7 +53,6 @@ export default function Draggable(element, props) {
         },
 
         async settleIntoPlace() {
-            const { element, props } = this;
             const event = fireAndForget(element, "transitionend");
             element.classList.remove(props.dragClassName);
             element.classList.remove('shadow');
@@ -66,7 +62,6 @@ export default function Draggable(element, props) {
         },
 
         async release() {
-            const { element } = this;
             await this.moveIntoPlace();
             this.settleIntoPlace();
             element.style.pointerEvents = 'auto';
