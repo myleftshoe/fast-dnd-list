@@ -1,13 +1,13 @@
 import './Draggable.css';
 import { fireAndForget } from './utils';
 
-export default function Draggable(element, props) {
+const transitions = {
+    grasp: 'box-shadow .2s ease-in-out, background-color .2s ease-in-out',
+    moveIntoPlace: 'transform .2s ease-in-out',
+    settleIntoPlace: 'box-shadow .2s ease-in-out, background-color .2s ease-in-out'
+}
 
-    const transitions = {
-        grasp: 'box-shadow .2s ease-in-out, background-color .2s ease-in-out',
-        moveIntoPlace: 'transform .2s ease-in-out',
-        settleIntoPlace: 'box-shadow .2s ease-in-out, background-color .2s ease-in-out'
-    }
+export default function Draggable(element, props) {
 
     return {
 
