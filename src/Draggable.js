@@ -11,13 +11,8 @@ export default function Draggable(element, props) {
 
     return {
 
-        get element() {
-            return element
-        },
-
-        get props() {
-            return props
-        },
+        get element() { return element },
+        get props() { return props },
 
         grasp() {
             element.style.zIndex = 999;
