@@ -5,32 +5,23 @@ import { preventDefault } from './utils';
 
 export default function Sortable(props) {
 
-    let startPosition, currentPosition;
-
-    const getTotalMovement = ({ x, y }) => ({
-        x: x - startPosition.x,
-        y: y - startPosition.y,
-    });
-
     let draggable;
 
     function onTouchStart(e) {
         e.stopPropagation();
         draggable = new Draggable(e.target, props);
+        draggable.position = [e.touches[0].clientX, e.touches[0].clientY];
         draggable.grasp(draggable);
-        startPosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
         props.onGrasp && props.onGrasp();
     }
 
     function onTouchMove(e) {
         e.stopPropagation();
-        currentPosition = { x: e.touches[0].clientX, y: e.touches[0].clientY }
-        const { x, y } = getTotalMovement(currentPosition);
-        draggable.element.style.transform = `translate(${x}px,${y}px)`;
+        draggable.position = [e.touches[0].clientX, e.touches[0].clientY];
         props.Drag && props.onDrag();
     }
 
-    const onTouchEnd = e => {
+    function onTouchEnd(e) {
         e.stopPropagation();
         draggable.release(draggable);
         props.onDrop && props.onDrop();

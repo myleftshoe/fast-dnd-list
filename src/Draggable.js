@@ -9,10 +9,31 @@ const transitions = {
 
 export default function Draggable(element, props) {
 
+    let startPosition = null;
+    let currentPosition = null;
+
+    const getTotalMovement = ([x, y]) => ([
+        x - startPosition[0],
+        y - startPosition[1],
+    ]);
+
     return {
 
         get element() { return element },
         get props() { return props },
+
+        set position([x, y]) {
+            currentPosition = [x, y];
+            if (!startPosition)
+                startPosition = currentPosition;
+            const [_x, _y] = getTotalMovement(currentPosition);
+            element.style.transform = `translate(${_x}px,${_y}px)`;
+
+        },
+
+        get position() {
+            return currentPosition;
+        },
 
         grasp() {
             element.style.zIndex = 999;
@@ -24,8 +45,8 @@ export default function Draggable(element, props) {
 
         async moveIntoPlace() {
             const { element } = this;
-            // if (!currentPosition)
-            //     return Promise.resolve();
+            if (currentPosition === startPosition)
+                return Promise.resolve();
             const event = fireAndForget(element, "transitionend");
             element.style.transition = transitions.moveIntoPlace;
             element.style.transform = null;
