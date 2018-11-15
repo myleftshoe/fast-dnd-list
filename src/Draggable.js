@@ -12,25 +12,21 @@ export default function Draggable(element, props) {
     let startPosition = null;
     let currentPosition = null;
 
-    const getTotalMovement = ([x, y]) => ([
-        x - startPosition[0],
-        y - startPosition[1],
-    ]);
+    const getDisplacement = () => [
+        currentPosition[0] - startPosition[0],
+        currentPosition[1] - startPosition[1],
+    ];
 
     return {
 
         get element() { return element },
 
-        set position([x, y]) {
-            currentPosition = [x, y];
+        trackPointer(pointerPosition) {
+            currentPosition = pointerPosition;
             if (!startPosition)
                 startPosition = currentPosition;
-            const [_x, _y] = getTotalMovement(currentPosition);
-            element.style.transform = `translate(${_x}px,${_y}px)`;
-        },
-
-        get position() {
-            return currentPosition;
+            const [x, y] = getDisplacement();
+            element.style.transform = `translate(${x}px,${y}px)`;
         },
 
         grasp() {

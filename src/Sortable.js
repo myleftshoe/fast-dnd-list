@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Draggable from './Draggable';
+
 import { preventDefault } from './utils';
 
 export default function Sortable(props) {
@@ -12,14 +13,14 @@ export default function Sortable(props) {
         e.stopPropagation();
         if (e.target === containerRef.current) return;
         draggable = new Draggable(e.target, props);
-        draggable.position = [e.touches[0].clientX, e.touches[0].clientY];
+        draggable.trackPointer([e.touches[0].clientX, e.touches[0].clientY]);
         draggable.grasp(draggable);
         props.onGrasp && props.onGrasp();
     }
 
     function onTouchMove(e) {
         e.stopPropagation();
-        draggable.position = [e.touches[0].clientX, e.touches[0].clientY];
+        draggable.trackPointer([e.touches[0].clientX, e.touches[0].clientY]);
         props.Drag && props.onDrag();
     }
 
