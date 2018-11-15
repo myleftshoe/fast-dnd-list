@@ -6,9 +6,11 @@ import { preventDefault } from './utils';
 export default function Sortable(props) {
 
     let draggable;
+    const containerRef = React.createRef();
 
     function onTouchStart(e) {
         e.stopPropagation();
+        if (e.target === containerRef.current) return;
         draggable = new Draggable(e.target, props);
         draggable.position = [e.touches[0].clientX, e.touches[0].clientY];
         draggable.grasp(draggable);
@@ -28,6 +30,7 @@ export default function Sortable(props) {
     }
 
     return <div
+        ref={containerRef}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
