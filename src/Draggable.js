@@ -37,6 +37,7 @@ export default function Draggable(element, props) {
 
         grasp() {
             element.style.zIndex = 999;
+            element.style.pointerEvents = 'none';
             element.style.position = 'relative';
             element.style.transition = transitions.grasp;
             element.classList.add(props.dragClassName);
@@ -68,6 +69,7 @@ export default function Draggable(element, props) {
             const { element } = this;
             await this.moveIntoPlace();
             this.settleIntoPlace();
+            element.style.pointerEvents = 'auto';
             element.style.zIndex = 0;
         }
     }
