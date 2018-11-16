@@ -37,7 +37,6 @@ export default function (container, props) {
                 if (element !== draggable.element) {
                     const t = element.offsetTop;
                     const pos = t + (t < zero ? element.offsetHeight : 0) - zero;
-                    console.log(element.offsetHeight, t, zero);
                     droppables.push({ element, pos });
                 }
             });
@@ -48,7 +47,7 @@ export default function (container, props) {
             draggable.position = [e.touches[0].clientX, e.touches[0].clientY];
 
             const elementUnderDraggable = getElementUnderDraggable();
-            console.log(elementUnderDraggable.element && elementUnderDraggable.element.innerText);
+            // console.log(elementUnderDraggable.element && elementUnderDraggable.element.innerText);
 
             if (elementUnderDraggable.isDroppable && elementUnderDraggable.element !== prevElementUnderDraggable.element) {
                 prevElementUnderDraggable = elementUnderDraggable;
@@ -74,8 +73,7 @@ export default function (container, props) {
             })
         },
 
-        release(e) {
-            console.log(droppables);
+        async release(e) {
             const elementOffsetTop = prevElementUnderDraggable.element.offsetTop;
             const draggableOffsetTop = draggable.element.offsetTop;
 
@@ -89,8 +87,8 @@ export default function (container, props) {
                     off = -off;
                 y = y + off;
             }
-            // const y = (translateY !== 0) ? elementOffsetTop - draggableOffsetTop : elementOffsetTop - draggableOffsetTop - 62;
-            draggable.release(0, y);
+
+            await draggable.release(0, y);
 
             droppables.forEach(d => {
                 d.element.style.transition = '';

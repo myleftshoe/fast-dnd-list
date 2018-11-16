@@ -79,15 +79,15 @@ export default function Draggable(element, props) {
             element.classList.remove('shadow');
             element.style.transition = transitions.settleIntoPlace;
             await event;
-            element.style.transition = null;
-            // element.style.transform = null;
         },
 
         async release(x, y) {
             await this.moveIntoPlace(x, y);
-            this.settleIntoPlace();
+            await this.settleIntoPlace();
             element.style.pointerEvents = 'auto';
             element.style.zIndex = 0;
+            element.style.transition = null;
+            element.style.transform = null;
         }
     }
 }

@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Handler from './Handler';
 import { preventDefault } from './utils';
@@ -27,10 +27,11 @@ export default function Sortable(props) {
         props.Drag && props.onDrag();
     }
 
-    function onTouchEnd(e) {
+    async function onTouchEnd(e) {
         e.stopPropagation();
-        const result = handler.release(e);
-        console.table([...containerRef.current.children].map(({style}) => [style.transition, style.transform]))
+        const result = await handler.release(e);
+        console.table([...containerRef.current.children].map(({ style }) => [style.transition, style.transform]))
+        props.onDrop && props.onDrop(result)
         // setTimeout(() => props.onDrop && props.onDrop(result),2000);
     }
 
