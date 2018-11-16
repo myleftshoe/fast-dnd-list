@@ -12,6 +12,8 @@ export default function Draggable(element, props) {
     let startPosition = null;
     let currentPosition = null;
     let direction = null;
+    let minMoveY = 0;
+    let maxMoveY = 0;
 
     const getDisplacement = () => [
         currentPosition[0] - startPosition[0],
@@ -25,6 +27,9 @@ export default function Draggable(element, props) {
         get direction() { return direction },
 
         get displacement() { return getDisplacement() },
+
+        get minMoveY() { return minMoveY },
+        get maxMoveY() { return maxMoveY },
 
         get dimensions() {
             const { marginTop, marginBottom, marginLeft, marginRight } = window.getComputedStyle(element);
@@ -51,6 +56,8 @@ export default function Draggable(element, props) {
             if (!startPosition)
                 startPosition = currentPosition;
             const [x, y] = getDisplacement();
+            if (y < minMoveY) minMoveY = y;
+            if (y > maxMoveY) maxMoveY = y;
             element.style.transform = `translate(${x}px,${y}px)`;
         },
 

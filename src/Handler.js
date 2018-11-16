@@ -5,8 +5,6 @@ export default function (container, props) {
     let droppables;
     let draggable;
     let prevElementUnderDraggable;
-    let minMoveY;
-    let maxMoveY;
 
     const elementIndex = element => [...container.children].indexOf(element);
 
@@ -28,8 +26,7 @@ export default function (container, props) {
             draggable.position = [e.touches[0].clientX, e.touches[0].clientY];
             draggable.grasp(draggable);
 
-            prevElementUnderDraggable = { element: null, index: -1, isDroppable: false };;
-            minMoveY = maxMoveY = 0;
+            prevElementUnderDraggable = { element: null, index: -1, isDroppable: false };
 
             const zero = draggable.absoluteCenter[1];
             droppables = [];
@@ -54,9 +51,9 @@ export default function (container, props) {
                 return;
             }
 
-            const move = draggable.displacement;
-            if (move[1] < minMoveY) minMoveY = move[1];
-            if (move[1] > maxMoveY) maxMoveY = move[1];
+            const [, y] = draggable.displacement;
+            const minMoveY = draggable.minMoveY;
+            const maxMoveY = draggable.maxMoveY;
 
             const draggedOverDroppables = droppables.filter(d => d.pos > minMoveY && d.pos < maxMoveY);
 
@@ -64,9 +61,9 @@ export default function (container, props) {
             // console.log(height,droppables);
             draggedOverDroppables.forEach(d => {
                 let off = 0;
-                if (d.pos < 0 && move[1] < 0 && d.pos > move[1])
+                if (d.pos < 0 && y < 0 && d.pos > y)
                     off = height;
-                else if (d.pos > 0 && move[1] > 0 && d.pos < move[1])
+                else if (d.pos > 0 && y > 0 && d.pos < y)
                     off = -height;
                 d.element.style['transition'] = 'transform .2s ease-in-out';
                 d.element.style['transform'] = off ? `translateY(${off}px)` : '';
