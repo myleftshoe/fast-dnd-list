@@ -1,6 +1,6 @@
 import Draggable from './Draggable';
 
-export default function(container, props) {
+export default function (container, props) {
 
     let droppables;
     let draggable;
@@ -38,7 +38,7 @@ export default function(container, props) {
                     const t = node.offsetTop;
                     const pos = t + (t < zero ? node.offsetHeight : 0) - zero;
                     console.log(node.offsetHeight, t, zero);
-                    droppables.push({node, pos});
+                    droppables.push({ node, pos });
                 }
             });
         },
@@ -79,13 +79,24 @@ export default function(container, props) {
             console.log(droppables);
             const elementOffsetTop = prevElementUnderDraggable.element.offsetTop;
             const draggableOffsetTop = draggable.element.offsetTop;
-            console.log(elementOffsetTop, draggableOffsetTop);
+
+            const transformMatrix = window.getComputedStyle(prevElementUnderDraggable.element).getPropertyValue('transform');
+            const translateY = Number((transformMatrix.match(/-?\d+/g) || [0, 0, 0, 0, 0, 0])[5]);
+
+            let y = elementOffsetTop - draggableOffsetTop;
+            if (translateY === 0) {
+                let off = draggable.dimensions.height;
+                if (elementOffsetTop > draggableOffsetTop)
+                    off = -off;
+                y = y + off;
+            }
+            // const y = (translateY !== 0) ? elementOffsetTop - draggableOffsetTop : elementOffsetTop - draggableOffsetTop - 62;
+            draggable.release(0, y);
+
             droppables.forEach(d => {
                 d.node.style.transition = '';
-                // d.node.style.transform = '';
+                d.node.style.transform = '';
             })
-
-            draggable.release(0 , elementOffsetTop - draggableOffsetTop);
             return { oldIndex: elementIndex(draggable.element), newIndex: prevElementUnderDraggable.index }
         }
     }

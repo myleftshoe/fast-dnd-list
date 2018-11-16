@@ -7,7 +7,10 @@ import { preventDefault } from './utils';
 
 export default function Sortable(props) {
 
-    useEffect(() => {handler = new Handler(containerRef.current, props)});
+    useEffect(() => {
+        handler = new Handler(containerRef.current, props);
+        return null;
+    });
 
     const containerRef = React.createRef();
     let handler;
