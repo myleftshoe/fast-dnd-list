@@ -25,7 +25,7 @@ export default function (container, props) {
         init(e) {
             if (e.target === container) return;
             draggable = new Draggable(e.target, props);
-            draggable.trackPointer([e.touches[0].clientX, e.touches[0].clientY]);
+            draggable.position = [e.touches[0].clientX, e.touches[0].clientY];
             draggable.grasp(draggable);
 
             prevElementUnderDraggable = { element: null, index: -1, isDroppable: false };;
@@ -45,7 +45,7 @@ export default function (container, props) {
 
         handleMove(e) {
 
-            draggable.trackPointer([e.touches[0].clientX, e.touches[0].clientY]);
+            draggable.position = [e.touches[0].clientX, e.touches[0].clientY];
 
             const elementUnderDraggable = getElementUnderDraggable();
             console.log(elementUnderDraggable.element && elementUnderDraggable.element.innerText);

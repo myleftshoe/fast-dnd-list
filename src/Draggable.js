@@ -22,9 +22,9 @@ export default function Draggable(element, props) {
 
         get element() { return element },
 
-        get direction() { return direction},
+        get direction() { return direction },
 
-        get displacement() { return getDisplacement()},
+        get displacement() { return getDisplacement() },
 
         get dimensions() {
             const { marginTop, marginBottom, marginLeft, marginRight } = window.getComputedStyle(element);
@@ -40,14 +40,14 @@ export default function Draggable(element, props) {
             // return [element.offsetLeft + this.dimensions.width / 2, element.offsetTop + this.dimensions.height / 2];
         },
 
-        trackPointer(pointerPosition) {
+        set position(position) {
             if (currentPosition) {
-                if (pointerPosition[1] < currentPosition[1])
+                if (position[1] < currentPosition[1])
                     direction = 'up';
                 else
                     direction = 'down';
             }
-            currentPosition = pointerPosition;
+            currentPosition = position;
             if (!startPosition)
                 startPosition = currentPosition;
             const [x, y] = getDisplacement();
@@ -63,7 +63,7 @@ export default function Draggable(element, props) {
             props.raised && element.classList.add('shadow');
         },
 
-        async moveIntoPlace(x,y) {
+        async moveIntoPlace(x, y) {
             if (currentPosition === startPosition)
                 return Promise.resolve();
             const event = fireAndForget(element, "transitionend");
@@ -83,8 +83,8 @@ export default function Draggable(element, props) {
             // element.style.transform = null;
         },
 
-        async release(x,y) {
-            await this.moveIntoPlace(x,y);
+        async release(x, y) {
+            await this.moveIntoPlace(x, y);
             this.settleIntoPlace();
             element.style.pointerEvents = 'auto';
             element.style.zIndex = 0;
