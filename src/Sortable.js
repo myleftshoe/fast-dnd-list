@@ -1,33 +1,34 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import PropTypes from 'prop-types';
-import Draggable from './Draggable';
-
+import Handler from './Handler';
 import { preventDefault } from './utils';
+
+//------------------------------------------------------------------------------
 
 export default function Sortable(props) {
 
-    let draggable;
+    useEffect(() => {handler = new Handler(containerRef.current, props)});
+
     const containerRef = React.createRef();
+    let handler;
 
     function onTouchStart(e) {
         e.stopPropagation();
-        if (e.target === containerRef.current) return;
-        draggable = new Draggable(e.target, props);
-        draggable.trackPointer([e.touches[0].clientX, e.touches[0].clientY]);
-        draggable.grasp(draggable);
+        handler.init(e);
         props.onGrasp && props.onGrasp();
     }
 
     function onTouchMove(e) {
         e.stopPropagation();
-        draggable.trackPointer([e.touches[0].clientX, e.touches[0].clientY]);
+        handler.handleMove(e);
         props.Drag && props.onDrag();
     }
 
     function onTouchEnd(e) {
         e.stopPropagation();
-        draggable.release(draggable);
-        props.onDrop && props.onDrop();
+        const result = handler.release(e);
+        console.table([...containerRef.current.children].map(({style}) => [style.transition, style.transform]))
+        // setTimeout(() => props.onDrop && props.onDrop(result),2000);
     }
 
     return <div
@@ -55,3 +56,5 @@ Sortable.defaultProps = {
     raised: true,
     dragClassName: 'drag-style',
 }
+
+//------------------------------------------------------------------------------

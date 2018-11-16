@@ -11,6 +11,7 @@ export default function Draggable(element, props) {
 
     let startPosition = null;
     let currentPosition = null;
+    let direction = null;
 
     const getDisplacement = () => [
         currentPosition[0] - startPosition[0],
@@ -21,7 +22,31 @@ export default function Draggable(element, props) {
 
         get element() { return element },
 
+        get direction() { return direction},
+
+        get displacement() { return getDisplacement()},
+
+        get dimensions() {
+            const { marginTop, marginBottom, marginLeft, marginRight } = window.getComputedStyle(element);
+            return {
+                width: element.offsetWidth + Math.max(parseInt(marginLeft), parseInt(marginRight)),
+                height: element.offsetHeight + Math.max(parseInt(marginTop), parseInt(marginBottom)),
+            }
+        },
+
+        get absoluteCenter() {
+            const { left, top, height, width } = element.getBoundingClientRect();
+            return [left + width / 2, top + height / 2];
+            // return [element.offsetLeft + this.dimensions.width / 2, element.offsetTop + this.dimensions.height / 2];
+        },
+
         trackPointer(pointerPosition) {
+            if (currentPosition) {
+                if (pointerPosition[1] < currentPosition[1])
+                    direction = 'up';
+                else
+                    direction = 'down';
+            }
             currentPosition = pointerPosition;
             if (!startPosition)
                 startPosition = currentPosition;
@@ -38,12 +63,12 @@ export default function Draggable(element, props) {
             props.raised && element.classList.add('shadow');
         },
 
-        async moveIntoPlace() {
+        async moveIntoPlace(x,y) {
             if (currentPosition === startPosition)
                 return Promise.resolve();
             const event = fireAndForget(element, "transitionend");
             element.style.transition = transitions.moveIntoPlace;
-            element.style.transform = null;
+            element.style.transform = `translate(0px,${y}px)`;
             await event;
             return event;
         },
@@ -55,10 +80,11 @@ export default function Draggable(element, props) {
             element.style.transition = transitions.settleIntoPlace;
             await event;
             element.style.transition = null;
+            // element.style.transform = null;
         },
 
-        async release() {
-            await this.moveIntoPlace();
+        async release(x,y) {
+            await this.moveIntoPlace(x,y);
             this.settleIntoPlace();
             element.style.pointerEvents = 'auto';
             element.style.zIndex = 0;
