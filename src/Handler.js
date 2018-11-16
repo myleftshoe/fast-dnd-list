@@ -33,12 +33,12 @@ export default function (container, props) {
 
             const zero = draggable.absoluteCenter[1];
             droppables = [];
-            [...container.children].forEach((node, index) => {
-                if (node !== draggable.element) {
-                    const t = node.offsetTop;
-                    const pos = t + (t < zero ? node.offsetHeight : 0) - zero;
-                    console.log(node.offsetHeight, t, zero);
-                    droppables.push({ node, pos });
+            [...container.children].forEach((element, index) => {
+                if (element !== draggable.element) {
+                    const t = element.offsetTop;
+                    const pos = t + (t < zero ? element.offsetHeight : 0) - zero;
+                    console.log(element.offsetHeight, t, zero);
+                    droppables.push({ element, pos });
                 }
             });
         },
@@ -59,19 +59,18 @@ export default function (container, props) {
             if (move[1] < minMoveY) minMoveY = move[1];
             if (move[1] > maxMoveY) maxMoveY = move[1];
 
-            const draggedOverNodes = droppables.filter(d => d.pos > minMoveY && d.pos < maxMoveY);
+            const draggedOverDroppables = droppables.filter(d => d.pos > minMoveY && d.pos < maxMoveY);
 
             const height = draggable.dimensions.height;
             // console.log(height,droppables);
-            draggedOverNodes.forEach(o => {
+            draggedOverDroppables.forEach(d => {
                 let off = 0;
-                if (o.pos < 0 && move[1] < 0 && o.pos > move[1])
+                if (d.pos < 0 && move[1] < 0 && d.pos > move[1])
                     off = height;
-                else if (o.pos > 0 && move[1] > 0 && o.pos < move[1])
+                else if (d.pos > 0 && move[1] > 0 && d.pos < move[1])
                     off = -height;
-                o.node.style['transition'] = 'transform .2s ease-in-out';
-                o.node.style['transform'] = off ? `translateY(${off}px)` : '';
-                // console.log(o.node.innerText, o.node.style.transition);
+                d.element.style['transition'] = 'transform .2s ease-in-out';
+                d.element.style['transform'] = off ? `translateY(${off}px)` : '';
             })
         },
 
@@ -94,8 +93,8 @@ export default function (container, props) {
             draggable.release(0, y);
 
             droppables.forEach(d => {
-                d.node.style.transition = '';
-                d.node.style.transform = '';
+                d.element.style.transition = '';
+                d.element.style.transform = '';
             })
             return { oldIndex: elementIndex(draggable.element), newIndex: prevElementUnderDraggable.index }
         }
