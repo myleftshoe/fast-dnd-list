@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import Handler from './Handler';
 import { preventDefault } from './utils';
@@ -12,7 +12,8 @@ export default function Sortable(props) {
         return null;
     });
 
-    const containerRef = React.createRef();
+    const containerRef = useRef();
+
     let handler;
 
     function onTouchStart(e) {
