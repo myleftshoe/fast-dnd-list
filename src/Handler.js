@@ -6,8 +6,7 @@ export default function (container, props) {
 
     let droppables;
     let draggable;
-    let prevDirection;
-    let prevElementUnderDraggable;
+    let last;
 
     return {
 
@@ -21,8 +20,7 @@ export default function (container, props) {
 
             droppables = new Droppables(container, draggable);
 
-            prevDirection = null;
-            prevElementUnderDraggable = null;
+            last = { element: null, direction: null };
 
         },
 
@@ -33,9 +31,9 @@ export default function (container, props) {
             const elementUnderDraggable = droppables.getElementUnderDraggable();
 
             if (elementUnderDraggable) {
-                if (elementUnderDraggable !== prevElementUnderDraggable || draggable.direction !== prevDirection) {
-                    prevElementUnderDraggable = elementUnderDraggable;
-                    prevDirection = draggable.direction;
+                if (elementUnderDraggable !== last.element || draggable.direction !== last.direction) {
+                    last.element = elementUnderDraggable;
+                    last.direction = draggable.direction;
                     droppables.translate();
                 }
             }
@@ -45,7 +43,7 @@ export default function (container, props) {
         async release(e) {
 
             const oldIndex = getChildIndex(container, draggable.element);
-            const newIndex = getChildIndex(container, prevElementUnderDraggable);
+            const newIndex = getChildIndex(container, last.element);
 
             await draggable.release(0, getFinalPosition());
 
@@ -59,10 +57,10 @@ export default function (container, props) {
 
     function getFinalPosition() {
 
-        const elementOffsetTop = prevElementUnderDraggable.offsetTop;
+        const elementOffsetTop = last.element.offsetTop;
         const draggableOffsetTop = draggable.element.offsetTop;
 
-        const [, translateY] = getElementTranslation(prevElementUnderDraggable);
+        const [, translateY] = getElementTranslation(last.element);
 
         let y = elementOffsetTop - draggableOffsetTop;
         if (translateY === 0) {
