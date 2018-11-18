@@ -4,19 +4,10 @@ export default function (container, props) {
 
     let droppables;
     let draggable;
+    let prevDirection;
     let prevElementUnderDraggable;
 
     const elementIndex = element => [...container.children].indexOf(element);
-
-    function getElementUnderDraggable() {
-        let result = { element: null, index: -1, isDroppable: false };
-        const [cx, cy] = draggable.absoluteCenter;
-        const element = document.elementFromPoint(cx, cy);
-        const index = elementIndex(element);
-        if (index > -1)
-            result = { element, index, isDroppable: true }
-        return result;
-    }
 
     return {
 
@@ -26,72 +17,123 @@ export default function (container, props) {
             draggable.position = [e.touches[0].clientX, e.touches[0].clientY];
             draggable.grasp(draggable);
 
-            prevElementUnderDraggable = { element: null, index: -1, isDroppable: false };
+            prevDirection = null;
+            prevElementUnderDraggable = draggable.element;
 
-            const zero = draggable.absoluteCenter[1];
-            droppables = [];
-            [...container.children].forEach((element, index) => {
-                if (element !== draggable.element) {
-                    const t = element.offsetTop;
-                    const pos = t + (t < zero ? element.offsetHeight : 0) - zero;
-                    droppables.push({ element, pos });
-                }
-            });
+            initDroppables();
         },
+
 
         handleMove(e) {
 
             draggable.position = [e.touches[0].clientX, e.touches[0].clientY];
 
             const elementUnderDraggable = getElementUnderDraggable();
-            // console.log(elementUnderDraggable.element && elementUnderDraggable.element.innerText);
 
-            if (elementUnderDraggable.isDroppable && elementUnderDraggable.element !== prevElementUnderDraggable.element) {
-                prevElementUnderDraggable = elementUnderDraggable;
-                return;
+            if (elementUnderDraggable) {
+                if (elementUnderDraggable !== prevElementUnderDraggable || draggable.direction !== prevDirection) {
+                    prevElementUnderDraggable = elementUnderDraggable;
+                    prevDirection = draggable.direction;
+                    translateDroppables();
+                }
             }
 
-            const [, y] = draggable.displacement;
-            const minMoveY = draggable.minMoveY;
-            const maxMoveY = draggable.maxMoveY;
-
-            const draggedOverDroppables = droppables.filter(d => d.pos > minMoveY && d.pos < maxMoveY);
-
-            const height = draggable.dimensions.height;
-            // console.log(height,droppables);
-            draggedOverDroppables.forEach(d => {
-                let off = 0;
-                if (d.pos < 0 && y < 0 && d.pos > y)
-                    off = height;
-                else if (d.pos > 0 && y > 0 && d.pos < y)
-                    off = -height;
-                d.element.style['transition'] = 'transform .2s ease-in-out';
-                d.element.style['transform'] = off ? `translateY(${off}px)` : '';
-            })
         },
 
         async release(e) {
-            const elementOffsetTop = prevElementUnderDraggable.element.offsetTop;
-            const draggableOffsetTop = draggable.element.offsetTop;
 
-            const transformMatrix = window.getComputedStyle(prevElementUnderDraggable.element).getPropertyValue('transform');
-            const translateY = Number((transformMatrix.match(/-?\d+/g) || [0, 0, 0, 0, 0, 0])[5]);
+            const oldIndex = elementIndex(draggable.element);
+            let newIndex = oldIndex;
 
-            let y = elementOffsetTop - draggableOffsetTop;
-            if (translateY === 0) {
-                let off = draggable.dimensions.height;
-                if (elementOffsetTop > draggableOffsetTop)
-                    off = -off;
-                y = y + off;
+            if (!prevElementUnderDraggable) {
+                await draggable.release(0, 0);
+            }
+            else {
+                newIndex = elementIndex(prevElementUnderDraggable);
+                await draggable.release(0, getFinalPosition());
+                resetDroppables();
             }
 
-            await draggable.release(0, y);
-
-            droppables.forEach(d => {
-                d.element.style.transition = '';
-                d.element.style.transform = '';
-            })
-            return { oldIndex: elementIndex(draggable.element), newIndex: prevElementUnderDraggable.index }
+            return { oldIndex, newIndex }
         }
     }
+
+    //------------------------------------------------------------------------------
+
+    function getElementTranslation(element) {
+        const transformMatrix = window.getComputedStyle(prevElementUnderDraggable).getPropertyValue('transform');
+        const [, , , , x, y] = transformMatrix.match(/-?\d+/g) || [0, 0, 0, 0, 0, 0];
+        return [x, y]
+    }
+
+    function getFinalPosition() {
+
+        const elementOffsetTop = prevElementUnderDraggable.offsetTop;
+        const draggableOffsetTop = draggable.element.offsetTop;
+
+        const [, translateY] = getElementTranslation(prevElementUnderDraggable);
+
+        let y = elementOffsetTop - draggableOffsetTop;
+        if (translateY === 0) {
+            let off = draggable.dimensions.height;
+            if (elementOffsetTop > draggableOffsetTop)
+                off = -off;
+            y = y + off;
+        }
+
+        return y;
+    }
+
+    function translateDroppables() {
+
+        const [, y] = draggable.displacement;
+        const height = draggable.dimensions.height;
+        const { minMoveY, maxMoveY } = draggable;
+
+        function translateDroppable(d) {
+            let off = 0;
+            if (d.pos < 0 && y < 0 && d.pos >= y)
+                off = height;
+            else if (d.pos > 0 && y > 0 && d.pos <= y)
+                off = -height;
+            d.element.style['transition'] = 'transform .2s ease-in-out';
+            d.element.style['transform'] = off ? `translateY(${off}px)` : '';
+        }
+
+        // Only translate affected droppables, i.e. those that were dragged over
+        const wasDraggedOver = droppable => droppable.pos >= minMoveY && droppable.pos <= maxMoveY;
+
+        droppables
+            .filter(wasDraggedOver)
+            .forEach(translateDroppable);
+    }
+
+    function initDroppables() {
+        const zero = draggable.absoluteCenter[1];
+        droppables = [];
+        [...container.children].forEach((element, index) => {
+            if (element !== draggable.element) {
+                const t = element.offsetTop;
+                const pos = t + (t < zero ? element.offsetHeight : 0) - zero;
+                droppables.push({ element, pos });
+            }
+        });
+    }
+
+    function resetDroppables() {
+        droppables.forEach(d => {
+            d.element.style.transition = '';
+            d.element.style.transform = '';
+        });
+    }
+
+    function getElementUnderDraggable() {
+        let element = null;
+        const [cx, cy] = draggable.absoluteCenter;
+        element = document.elementFromPoint(cx, cy);
+        if (elementIndex(element) < 0)
+            element = null;
+        return element;
+    }
+
 }
