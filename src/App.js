@@ -13,11 +13,11 @@ const actions = {
 }
 
 export default class App extends Component {
+
     state = { items: generateItems(8) }
-    onDrop = ({ oldIndex, newIndex }) => {
-        this.setState({ items: move(this.state.items, oldIndex, newIndex) })
-    }
-    // move = ({ oldIndex, newIndex }) => this.setState(actions.move(oldIndex, newIndex));
+
+    onDrop = ({ oldIndex, newIndex }) => this.setState(actions.move(oldIndex, newIndex))
+
     render() {
         return <div className='list'>
             <Sortable dragClassName='drag-style' onDrop={this.onDrop}>
