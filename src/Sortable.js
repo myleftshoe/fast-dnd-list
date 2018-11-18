@@ -31,9 +31,7 @@ export default function Sortable(props) {
     async function onTouchEnd(e) {
         e.stopPropagation();
         const result = await handler.release(e);
-        console.table([...containerRef.current.children].map(({ style }) => [style.transition, style.transform]))
         props.onDrop && props.onDrop(result)
-        // setTimeout(() => props.onDrop && props.onDrop(result),2000);
     }
 
     return <div

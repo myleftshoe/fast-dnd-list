@@ -14,7 +14,7 @@ const actions = {
 
 export default class App extends Component {
 
-    state = { items: generateItems(8) }
+    state = { items: generateItems(1000) }
 
     onDrop = ({ oldIndex, newIndex }) => this.setState(actions.move(oldIndex, newIndex))
 
