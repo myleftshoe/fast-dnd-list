@@ -1,5 +1,6 @@
 import Draggable from './Draggable';
 import Droppables from './Droppables';
+import { getChildIndex, getElementTranslation } from './elements';
 
 export default function (container, props) {
 
@@ -7,8 +8,6 @@ export default function (container, props) {
     let draggable;
     let prevDirection;
     let prevElementUnderDraggable;
-
-    const elementIndex = element => [...container.children].indexOf(element);
 
     return {
 
@@ -26,7 +25,6 @@ export default function (container, props) {
             prevElementUnderDraggable = draggable.element;
 
         },
-
 
         handleMove(e) {
 
@@ -46,14 +44,14 @@ export default function (container, props) {
 
         async release(e) {
 
-            const oldIndex = elementIndex(draggable.element);
+            const oldIndex = getChildIndex(container, draggable.element);
             let newIndex = oldIndex;
 
             if (!prevElementUnderDraggable) {
                 await draggable.release(0, 0);
             }
             else {
-                newIndex = elementIndex(prevElementUnderDraggable);
+                newIndex = getChildIndex(container, prevElementUnderDraggable);
                 await draggable.release(0, getFinalPosition());
                 droppables.reset();
             }
@@ -63,12 +61,6 @@ export default function (container, props) {
     }
 
     //------------------------------------------------------------------------------
-
-    function getElementTranslation(element) {
-        const transformMatrix = window.getComputedStyle(prevElementUnderDraggable).getPropertyValue('transform');
-        const [, , , , x, y] = transformMatrix.match(/-?\d+/g) || [0, 0, 0, 0, 0, 0];
-        return [x, y]
-    }
 
     function getFinalPosition() {
 

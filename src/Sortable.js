@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import Handler from './Handler';
-import { preventDefault } from './utils';
+import { preventDefault } from './events';
 
 //------------------------------------------------------------------------------
 

@@ -1,3 +1,5 @@
+import { getChildIndex } from './elements';
+
 export default function Droppables(container, draggable) {
 
     const droppables = [];
@@ -47,7 +49,7 @@ export default function Droppables(container, draggable) {
             let element = null;
             const [cx, cy] = draggable.absoluteCenter;
             element = document.elementFromPoint(cx, cy);
-            if ([...container.children].indexOf(element) < 0)
+            if (getChildIndex(container, element) < 0)
                 element = null;
             return element;
         }
