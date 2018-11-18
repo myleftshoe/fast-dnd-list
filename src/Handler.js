@@ -1,4 +1,5 @@
 import Draggable from './Draggable';
+import Droppables from './Droppables';
 
 export default function (container, props) {
 
@@ -12,15 +13,18 @@ export default function (container, props) {
     return {
 
         init(e) {
+
             if (e.target === container) return;
+
             draggable = new Draggable(e.target, props);
             draggable.position = [e.touches[0].clientX, e.touches[0].clientY];
             draggable.grasp(draggable);
 
+            droppables = new Droppables(container, draggable);
+
             prevDirection = null;
             prevElementUnderDraggable = draggable.element;
 
-            initDroppables();
         },
 
 
@@ -28,13 +32,13 @@ export default function (container, props) {
 
             draggable.position = [e.touches[0].clientX, e.touches[0].clientY];
 
-            const elementUnderDraggable = getElementUnderDraggable();
+            const elementUnderDraggable = droppables.getElementUnderDraggable();
 
             if (elementUnderDraggable) {
                 if (elementUnderDraggable !== prevElementUnderDraggable || draggable.direction !== prevDirection) {
                     prevElementUnderDraggable = elementUnderDraggable;
                     prevDirection = draggable.direction;
-                    translateDroppables();
+                    droppables.translate();
                 }
             }
 
@@ -51,7 +55,7 @@ export default function (container, props) {
             else {
                 newIndex = elementIndex(prevElementUnderDraggable);
                 await draggable.release(0, getFinalPosition());
-                resetDroppables();
+                droppables.reset();
             }
 
             return { oldIndex, newIndex }
@@ -82,58 +86,6 @@ export default function (container, props) {
         }
 
         return y;
-    }
-
-    function translateDroppables() {
-
-        const [, y] = draggable.displacement;
-        const height = draggable.dimensions.height;
-        const { minMoveY, maxMoveY } = draggable;
-
-        function translateDroppable(d) {
-            let off = 0;
-            if (d.pos < 0 && y < 0 && d.pos >= y)
-                off = height;
-            else if (d.pos > 0 && y > 0 && d.pos <= y)
-                off = -height;
-            d.element.style['transition'] = 'transform .2s ease-in-out';
-            d.element.style['transform'] = off ? `translateY(${off}px)` : '';
-        }
-
-        // Only translate affected droppables, i.e. those that were dragged over
-        const wasDraggedOver = droppable => droppable.pos >= minMoveY && droppable.pos <= maxMoveY;
-
-        droppables
-            .filter(wasDraggedOver)
-            .forEach(translateDroppable);
-    }
-
-    function initDroppables() {
-        const zero = draggable.absoluteCenter[1];
-        droppables = [];
-        [...container.children].forEach((element, index) => {
-            if (element !== draggable.element) {
-                const t = element.offsetTop;
-                const pos = t + (t < zero ? element.offsetHeight : 0) - zero;
-                droppables.push({ element, pos });
-            }
-        });
-    }
-
-    function resetDroppables() {
-        droppables.forEach(d => {
-            d.element.style.transition = '';
-            d.element.style.transform = '';
-        });
-    }
-
-    function getElementUnderDraggable() {
-        let element = null;
-        const [cx, cy] = draggable.absoluteCenter;
-        element = document.elementFromPoint(cx, cy);
-        if (elementIndex(element) < 0)
-            element = null;
-        return element;
     }
 
 }
