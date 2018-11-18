@@ -10,7 +10,7 @@ export default function (container, props) {
 
     return {
 
-        init(e) {
+        grasp(e) {
 
             if (e.target === container) return;
 
@@ -24,7 +24,7 @@ export default function (container, props) {
 
         },
 
-        handleMove(e) {
+        move(e) {
 
             draggable.position = [e.touches[0].clientX, e.touches[0].clientY];
 

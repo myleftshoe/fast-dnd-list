@@ -18,13 +18,13 @@ export default function Sortable(props) {
 
     function onTouchStart(e) {
         e.stopPropagation();
-        handler.init(e);
+        handler.grasp(e);
         props.onGrasp && props.onGrasp();
     }
 
     function onTouchMove(e) {
         e.stopPropagation();
-        handler.handleMove(e);
+        handler.move(e);
         props.Drag && props.onDrag();
     }
 
