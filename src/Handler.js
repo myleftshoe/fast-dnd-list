@@ -22,7 +22,7 @@ export default function (container, props) {
             droppables = new Droppables(container, draggable);
 
             prevDirection = null;
-            prevElementUnderDraggable = draggable.element;
+            prevElementUnderDraggable = null;
 
         },
 
@@ -45,16 +45,11 @@ export default function (container, props) {
         async release(e) {
 
             const oldIndex = getChildIndex(container, draggable.element);
-            let newIndex = oldIndex;
+            const newIndex = getChildIndex(container, prevElementUnderDraggable);
 
-            if (!prevElementUnderDraggable) {
-                await draggable.release(0, 0);
-            }
-            else {
-                newIndex = getChildIndex(container, prevElementUnderDraggable);
-                await draggable.release(0, getFinalPosition());
-                droppables.reset();
-            }
+            await draggable.release(0, getFinalPosition());
+
+            droppables.reset();
 
             return { oldIndex, newIndex }
         }
