@@ -2,6 +2,8 @@ import Draggable from './Draggable';
 import Droppables from './Droppables';
 import { getChildIndex, getElementTranslation } from './elements';
 
+//------------------------------------------------------------------------------
+
 export default function (container, props) {
 
     let droppables;
@@ -20,7 +22,7 @@ export default function (container, props) {
 
             droppables = new Droppables(container, draggable);
 
-            last = { element: null, direction: null };
+            last = { element: draggable.element, direction: null };
 
         },
 
@@ -53,8 +55,6 @@ export default function (container, props) {
         }
     }
 
-    //------------------------------------------------------------------------------
-
     function getFinalPosition() {
 
         const elementOffsetTop = last.element.offsetTop;
@@ -72,5 +72,4 @@ export default function (container, props) {
 
         return y;
     }
-
 }
