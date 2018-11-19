@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
 import Sortable from './Sortable';
-
 import { move, shuffle, reverse } from './array';
 
 const generateItems = length => [...Array(length).keys()].map(k => `Item ${k}`)
