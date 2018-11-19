@@ -91,8 +91,9 @@ export default function Draggable(element, props) {
         async release(x, y) {
             await this.moveIntoPlace(x, y);
             await this.settleIntoPlace();
-            element.style.pointerEvents = 'auto';
-            element.style.zIndex = 0;
+            element.style.position = null;
+            element.style.pointerEvents = null;
+            element.style.zIndex = null;
             element.style.transition = null;
             element.style.transform = null;
         }
