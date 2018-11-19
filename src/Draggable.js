@@ -62,6 +62,7 @@ export default function Draggable(element, props) {
         },
 
         grasp() {
+            element.style.willChange = 'transform';
             element.style.zIndex = 999;
             element.style.pointerEvents = 'none';
             element.style.position = 'relative';

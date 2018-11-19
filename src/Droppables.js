@@ -25,8 +25,10 @@ export function populateDroppables(container, draggable) {
                     off = height;
                 else if (d.pos > 0 && y > 0 && d.pos <= y)
                     off = -height;
+
+                d.element.style.willChange = 'transform';
                 d.element.style['transition'] = 'transform .2s ease-in-out';
-                d.element.style['transform'] = off ? `translateY(${off}px)` : '';
+                d.element.style['transform'] = off ? `translateY(${off}px)` : null;
             }
 
             // Only translate affected droppables, i.e. those that were dragged over
@@ -39,8 +41,8 @@ export function populateDroppables(container, draggable) {
 
         reset() {
             droppables.forEach(d => {
-                d.element.style.transition = '';
-                d.element.style.transform = '';
+                d.element.style.transition = null;
+                d.element.style.transform = null;
             });
         },
 
