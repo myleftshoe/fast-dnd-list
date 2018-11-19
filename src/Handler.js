@@ -17,7 +17,6 @@ export default function (container, props) {
             if (e.target === container) return;
 
             draggable = new Draggable(e.target, props);
-            draggable.position = [e.touches[0].clientX, e.touches[0].clientY];
             draggable.grasp(draggable);
 
             droppables = new Droppables(container, draggable);
