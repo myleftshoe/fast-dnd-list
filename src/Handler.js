@@ -1,11 +1,15 @@
 import Draggable from './Draggable';
-import Droppables from './Droppables';
-import { getChildIndex, getElementTranslation } from './elements';
+import { populateDroppables } from './Droppables';
 
 //------------------------------------------------------------------------------
 
-export default function (container, props) {
+export default function (containerElement, props) {
 
+    const container = {
+        element: containerElement,
+        indexOf: element => [...containerElement.children].indexOf(element),
+        children: () => [...containerElement.children],
+    }
     let droppables;
     let draggable;
     let last;
@@ -14,12 +18,12 @@ export default function (container, props) {
 
         grasp(e) {
 
-            if (e.target === container) return;
+            if (e.target === container.element) return;
 
             draggable = new Draggable(e.target, props);
             draggable.grasp(draggable);
 
-            droppables = new Droppables(container, draggable);
+            droppables = populateDroppables(container, draggable);
 
             last = { element: draggable.element, direction: null };
 
@@ -43,8 +47,8 @@ export default function (container, props) {
 
         async release(e) {
 
-            const oldIndex = getChildIndex(container, draggable.element);
-            const newIndex = getChildIndex(container, last.element);
+            const oldIndex = container.indexOf(draggable.element);
+            const newIndex = container.indexOf(last.element);
 
             await draggable.release(0, getFinalPosition());
 
@@ -71,4 +75,11 @@ export default function (container, props) {
 
         return y;
     }
+
+    function getElementTranslation(element) {
+        const transformMatrix = window.getComputedStyle(element).getPropertyValue('transform');
+        const [, , , , x, y] = transformMatrix.match(/-?\d+/g) || [0, 0, 0, 0, 0, 0];
+        return [x, y]
+    }
+
 }
