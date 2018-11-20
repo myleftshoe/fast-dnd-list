@@ -1,7 +1,4 @@
 import Draggable from './Draggable';
-// import { populateDroppables } from './Droppables';
-
-//------------------------------------------------------------------------------
 
 export default function (containerElement, props) {
 
@@ -10,7 +7,7 @@ export default function (containerElement, props) {
         indexOf: element => [...containerElement.children].indexOf(element),
         children: () => [...containerElement.children],
     }
-    // let droppables;
+
     let draggable;
     let last;
     let placeholderIndex;
@@ -25,7 +22,6 @@ export default function (containerElement, props) {
             draggable = new Draggable(e.target, props);
             draggable.grasp(draggable);
 
-            // droppables = populateDroppables(container, draggable);
             placeholderIndex = container.children().indexOf(draggable.element);
 
             last = { element: draggable.element, direction: null };
@@ -36,23 +32,17 @@ export default function (containerElement, props) {
 
             draggable.position = [e.touches[0].clientX, e.touches[0].clientY];
             scrollIfRequired();
-            console.log('placeholderIndex', placeholderIndex);
 
             const { direction, dimensions: { height } } = draggable;
             const elements = container.children();
-            console.log(height);
 
             if (direction === 'up' && lastDirection === 'down')
                 placeholderIndex++;
             else if (direction === 'down' && lastDirection === 'up')
                 placeholderIndex--;
 
-            // console.log('fffff', elements[placeholderIndex].innerText);
-
-            let count = 0;
             if (direction === 'down') {
                 for (let i = placeholderIndex + 1; i < elements.length; i++) {
-                    count++;
                     const element = elements[i];
                     const translateY = Number((element.style.transform.match(/-?\d+/g) || [0])[0]);
                     const { top } = element.getBoundingClientRect();
@@ -63,12 +53,10 @@ export default function (containerElement, props) {
                     element.style['transform'] = `translateY(${-height + translateY}px)`;
                     last.element = element;
                     placeholderIndex++;
-                    // console.log('ggg', element.innerText, getElementTranslation(element)[1], element.style.transform.match(/-?\d+/g)[0]);
                 }
             }
             else if (direction === 'up') {
                 for (let i = placeholderIndex - 1; i >= 0; i--) {
-                    count++;
                     const element = elements[i];
                     const translateY = Number((element.style.transform.match(/-?\d+/g) || [0])[0]);
                     const { top } = element.getBoundingClientRect();
@@ -83,18 +71,6 @@ export default function (containerElement, props) {
             }
 
             lastDirection = direction;
-            console.log(count);
-
-
-            // const elementUnderDraggable = getElementUnderDraggable();
-
-            // if (elementUnderDraggable) {
-            //     if (elementUnderDraggable !== last.element || draggable.direction !== last.direction) {
-            //         last.element = elementUnderDraggable;
-            //         last.direction = draggable.direction;
-            //         droppables.translate();
-            //     }
-            // }
 
         },
 
@@ -105,21 +81,16 @@ export default function (containerElement, props) {
 
             await draggable.release(0, getFinalPosition());
 
-            // droppables.reset();
-
             container.children().forEach(element => {
                 element.style.transition = null;
                 element.style.transform = null;
             });
-
-
 
             return { oldIndex, newIndex }
         }
     }
 
     function scrollIfRequired() {
-
 
         let scrollContainer = draggable.element.parentNode;
         while (scrollContainer) {
