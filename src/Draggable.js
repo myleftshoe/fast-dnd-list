@@ -39,6 +39,11 @@ export default function Draggable(element, props) {
             }
         },
 
+        get initialCenter() {
+            const { offsetLeft: left, offsetTop: top, offsetHeight: height, offsetWidth: width } = element;
+            return [left + width / 2, top + height / 2];
+        },
+
         get absoluteCenter() {
             const { left, top, height, width } = element.getBoundingClientRect();
             return [left + width / 2, top + height / 2];
