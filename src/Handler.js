@@ -13,6 +13,7 @@ export default function (containerElement, props) {
     let droppables;
     let draggable;
     let last;
+    let placeholderIndex;
 
     return {
 
@@ -24,6 +25,7 @@ export default function (containerElement, props) {
             draggable.grasp(draggable);
 
             droppables = populateDroppables(container, draggable);
+            placeholderIndex = container.children().indexOf(draggable.element);
 
             last = { element: draggable.element, direction: null };
 
@@ -33,16 +35,44 @@ export default function (containerElement, props) {
 
             draggable.position = [e.touches[0].clientX, e.touches[0].clientY];
             scrollIfRequired();
+            console.log('placeholderIndex', placeholderIndex);
 
-            const elementUnderDraggable = getElementUnderDraggable();
+            const { direction, dimensions: { height } } = draggable;
+            const elements = container.children();
+            console.log(height);
 
-            if (elementUnderDraggable) {
-                if (elementUnderDraggable !== last.element || draggable.direction !== last.direction) {
-                    last.element = elementUnderDraggable;
-                    last.direction = draggable.direction;
-                    droppables.translate();
+            if (direction === 'down') {
+                for (let i = placeholderIndex + 1; i < elements.length; i++) {
+                    const element = elements[i];
+                    const { top } = element.getBoundingClientRect();
+                    if (top > draggable.absoluteCenter[1]) break;
+                    element.style.willChange = 'transform';
+                    element.style['transition'] = 'transform .2s ease-in-out';
+                    element.style['transform'] = `translateY(${-height}px)`;
                 }
             }
+            else if (direction === 'up') {
+                for (let i = placeholderIndex - 1; i >= 0; i--) {
+                    const element = elements[i];
+                    const { top } = element.getBoundingClientRect();
+                    if (top + element.offsetHeight < draggable.absoluteCenter[1]) break;
+                    element.style.willChange = 'transform';
+                    element.style['transition'] = 'transform .2s ease-in-out';
+                    element.style['transform'] = `translateY(${height}px)`;
+                }
+            }
+
+
+
+            // const elementUnderDraggable = getElementUnderDraggable();
+
+            // if (elementUnderDraggable) {
+            //     if (elementUnderDraggable !== last.element || draggable.direction !== last.direction) {
+            //         last.element = elementUnderDraggable;
+            //         last.direction = draggable.direction;
+            //         droppables.translate();
+            //     }
+            // }
 
         },
 
