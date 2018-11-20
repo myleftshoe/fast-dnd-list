@@ -46,15 +46,6 @@ export function populateDroppables(container, draggable) {
             });
         },
 
-        getElementUnderDraggable() {
-            let element = null;
-            const [cx, cy] = draggable.absoluteCenter;
-            element = document.elementFromPoint(cx, cy);
-            if (container.indexOf(element) < 0)
-                element = null;
-            return element;
-        }
-
     }
 
 }

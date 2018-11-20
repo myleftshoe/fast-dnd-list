@@ -35,6 +35,7 @@ export default function Sortable(props) {
     }
 
     return <div
+        className='container'
         ref={containerRef}
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}

@@ -32,8 +32,9 @@ export default function (containerElement, props) {
         move(e) {
 
             draggable.position = [e.touches[0].clientX, e.touches[0].clientY];
+            scrollIfRequired();
 
-            const elementUnderDraggable = droppables.getElementUnderDraggable();
+            const elementUnderDraggable = getElementUnderDraggable();
 
             if (elementUnderDraggable) {
                 if (elementUnderDraggable !== last.element || draggable.direction !== last.direction) {
@@ -58,6 +59,44 @@ export default function (containerElement, props) {
         }
     }
 
+    function scrollIfRequired() {
+
+
+        let scrollContainer = draggable.element.parentNode;
+        while (scrollContainer) {
+            if (scrollContainer === document.body) break;
+            if (scrollContainer.scrollHeight > scrollContainer.clientHeight && window.getComputedStyle(scrollContainer)['overflow-y'] !== 'visible') break;
+            scrollContainer = scrollContainer.parentNode;
+        }
+        scrollContainer = scrollContainer || document.body;
+
+        const triggerOffset = 40;
+        let offset = 0;
+
+        const scrollable = scrollContainer;
+        const containerRect = scrollable.getBoundingClientRect();
+        const targetRect = draggable.element.getBoundingClientRect();
+        const bottomOffset = Math.min(containerRect.bottom, window.innerHeight) - targetRect.bottom;
+        const topOffset = targetRect.top - Math.max(containerRect.top, 0);
+        const maxScrollTop = container.element.scrollHeight - Math.min(scrollable.clientHeight, window.innerHeight);
+
+        if (bottomOffset < triggerOffset) {
+            offset = Math.min(triggerOffset, triggerOffset - bottomOffset);
+        }
+        else if (topOffset < triggerOffset) {
+            offset = Math.max(-triggerOffset, topOffset - triggerOffset);
+        }
+        // console.log(maxScrollTop, scrollable.scrollTop, offset);
+        const scrollAmount = Math.max(0, Math.min(maxScrollTop, scrollable.scrollTop + offset));
+        console.log(scrollAmount, document.body.scrollTop);
+        scrollable.scrollTop = scrollAmount;
+        // console.log(scrollable, scrollable.scrollTop);
+        // window.scrollTop = scrollAmount;
+        // scrollable.scrollTop = scrollable.scrollTop + 10;
+        // document.documentElement.scrollTop = document.documentElement.scrollTop + scrollAmount;
+        // console.log(document.documentElement.scrollTop);
+    }
+
     function getFinalPosition() {
 
         const elementOffsetTop = last.element.offsetTop;
@@ -80,6 +119,17 @@ export default function (containerElement, props) {
         const transformMatrix = window.getComputedStyle(element).getPropertyValue('transform');
         const [, , , , x, y] = transformMatrix.match(/-?\d+/g) || [0, 0, 0, 0, 0, 0];
         return [x, y]
+    }
+
+    function getElementUnderDraggable() {
+        let element = null;
+        const [cx, cy] = draggable.absoluteCenter;
+
+        element = document.elementFromPoint(cx, cy);
+        if (container.indexOf(element) < 0)
+            element = null;
+
+        return element;
     }
 
 }
