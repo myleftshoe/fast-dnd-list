@@ -1,5 +1,5 @@
 import Draggable from './Draggable';
-import { populateDroppables } from './Droppables';
+// import { populateDroppables } from './Droppables';
 
 //------------------------------------------------------------------------------
 
@@ -10,7 +10,7 @@ export default function (containerElement, props) {
         indexOf: element => [...containerElement.children].indexOf(element),
         children: () => [...containerElement.children],
     }
-    let droppables;
+    // let droppables;
     let draggable;
     let last;
     let placeholderIndex;
@@ -25,7 +25,7 @@ export default function (containerElement, props) {
             draggable = new Draggable(e.target, props);
             draggable.grasp(draggable);
 
-            droppables = populateDroppables(container, draggable);
+            // droppables = populateDroppables(container, draggable);
             placeholderIndex = container.children().indexOf(draggable.element);
 
             last = { element: draggable.element, direction: null };
@@ -105,7 +105,14 @@ export default function (containerElement, props) {
 
             await draggable.release(0, getFinalPosition());
 
-            droppables.reset();
+            // droppables.reset();
+
+            container.children().forEach(element => {
+                element.style.transition = null;
+                element.style.transform = null;
+            });
+
+
 
             return { oldIndex, newIndex }
         }
