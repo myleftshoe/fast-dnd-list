@@ -62,7 +62,7 @@ export default function Draggable(element, props) {
         grasp() {
             element.style.willChange = 'transform';
             element.style.zIndex = 999;
-            element.style.pointerEvents = 'none';
+            // element.style.pointerEvents = 'none';
             element.style.position = 'relative';
             element.style.transition = transitions.grasp;
             element.classList.add(props.dragClassName);
@@ -91,7 +91,7 @@ export default function Draggable(element, props) {
             await this.moveIntoPlace(x, y);
             await this.settleIntoPlace();
             element.style.position = null;
-            element.style.pointerEvents = null;
+            // element.style.pointerEvents = null;
             element.style.zIndex = null;
             element.style.transition = null;
             element.style.transform = null;
