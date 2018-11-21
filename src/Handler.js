@@ -1,12 +1,6 @@
 import Draggable from './Draggable';
 
-export default function (containerElement, props) {
-
-    const container = {
-        element: containerElement,
-        indexOf: element => [...containerElement.children].indexOf(element),
-        children: () => [...containerElement.children],
-    }
+export default function (container, props) {
 
     let draggable;
     let draggableIndex;
@@ -19,15 +13,18 @@ export default function (containerElement, props) {
 
         grasp(e) {
 
-            if (e.target === container.element) return;
+            if (e.target === container) return;
 
             draggable = new Draggable(e.target, props);
             draggable.grasp(draggable);
 
-            draggableIndex = container.indexOf(draggable.element);
+            // [...container.children], container.children.slice(), Array.from
+            // do not work in ms edge.
+            elements = Array.prototype.slice.call(container.children);
+
+            draggableIndex = elements.indexOf(draggable.element);
             placeholderIndex = draggableIndex;
 
-            elements = container.children();
             elements.splice(draggableIndex, 1);
 
             lastElement = draggable.element;
@@ -86,7 +83,7 @@ export default function (containerElement, props) {
 
             await draggable.release(0, getFinalPosition());
 
-            container.children().forEach(element => {
+            elements.forEach(element => {
                 element.style.transition = null;
                 element.style.transform = null;
             });
@@ -113,7 +110,7 @@ export default function (containerElement, props) {
         const targetRect = draggable.element.getBoundingClientRect();
         const bottomOffset = Math.min(containerRect.bottom, window.innerHeight) - targetRect.bottom;
         const topOffset = targetRect.top - Math.max(containerRect.top, 0);
-        const maxScrollTop = container.element.scrollHeight - Math.min(scrollable.clientHeight, window.innerHeight);
+        const maxScrollTop = container.scrollHeight - Math.min(scrollable.clientHeight, window.innerHeight);
 
         if (bottomOffset < triggerOffset) {
             offset = Math.min(triggerOffset, triggerOffset - bottomOffset);
