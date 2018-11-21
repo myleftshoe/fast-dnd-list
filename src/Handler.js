@@ -40,21 +40,19 @@ export default function (container, props) {
             const { direction, dimensions: { height } } = draggable;
 
             if (direction === 'down') {
-                for (let i = placeholderIndex; i < elements.length; i++) {
-                    const element = elements[i];
+                for (placeholderIndex; placeholderIndex < elements.length; placeholderIndex++) {
+                    const element = elements[placeholderIndex];
                     const top = element.getBoundingClientRect().top;
                     if (top > draggable.absoluteCenter[1]) break;
                     translate(element, -height);
-                    placeholderIndex++;
                 }
             }
             else if (direction === 'up') {
-                for (let i = placeholderIndex - 1; i >= 0; i--) {
-                    const element = elements[i];
+                for (placeholderIndex; placeholderIndex > 0; placeholderIndex--) {
+                    const element = elements[placeholderIndex - 1];
                     const bottom = element.getBoundingClientRect().top + element.offsetHeight;
                     if (bottom < draggable.absoluteCenter[1]) break;
                     translate(element, height);
-                    placeholderIndex--;
                 }
             }
 
