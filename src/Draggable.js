@@ -74,7 +74,7 @@ export default function Draggable(element, props) {
                 return Promise.resolve();
             const event = fireAndForget(element, "transitionend");
             element.style.transition = transitions.moveIntoPlace;
-            element.style.transform = `translate(0px,${y}px)`;
+            element.style.transform = `translate(0px,${y - element.offsetTop}px)`;
             await event;
             return event;
         },

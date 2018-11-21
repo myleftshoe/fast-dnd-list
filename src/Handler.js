@@ -5,9 +5,7 @@ export default function (container, props) {
     let draggable;
     let draggableIndex;
     let placeholderIndex;
-    let initialDirection;
     let elements;
-    let lastElement;
 
     return {
 
@@ -27,8 +25,6 @@ export default function (container, props) {
 
             elements.splice(draggableIndex, 1);
 
-            lastElement = draggable.element;
-
         },
 
         move(e) {
@@ -43,15 +39,12 @@ export default function (container, props) {
 
             const { direction, dimensions: { height } } = draggable;
 
-            if (!initialDirection) initialDirection = direction;
-
             if (direction === 'down') {
                 for (let i = placeholderIndex; i < elements.length; i++) {
                     const element = elements[i];
                     const top = element.getBoundingClientRect().top;
                     if (top > draggable.absoluteCenter[1]) break;
-                    translate(element, -height)
-                    lastElement = element;
+                    translate(element, -height);
                     placeholderIndex++;
                 }
             }
@@ -60,8 +53,7 @@ export default function (container, props) {
                     const element = elements[i];
                     const bottom = element.getBoundingClientRect().top + element.offsetHeight;
                     if (bottom < draggable.absoluteCenter[1]) break;
-                    translate(element, height)
-                    lastElement = element;
+                    translate(element, height);
                     placeholderIndex--;
                 }
             }
@@ -81,7 +73,7 @@ export default function (container, props) {
             const oldIndex = draggableIndex;
             const newIndex = placeholderIndex;
 
-            await draggable.release(0, getFinalPosition());
+            await draggable.release(0, container.children[placeholderIndex].offsetTop);
 
             elements.forEach(element => {
                 element.style.transition = null;
@@ -127,28 +119,6 @@ export default function (container, props) {
         // scrollable.scrollTop = scrollable.scrollTop + 10;
         // document.documentElement.scrollTop = document.documentElement.scrollTop + scrollAmount;
         // console.log(document.documentElement.scrollTop);
-    }
-
-    function getFinalPosition() {
-
-        const elementOffsetTop = lastElement.offsetTop;
-        const draggableOffsetTop = draggable.element.offsetTop;
-        const [, translateY] = getComputedTranslation(lastElement);
-        const { direction, dimensions: { height } } = draggable;
-
-        let y = elementOffsetTop - draggableOffsetTop;
-
-        if (!translateY && elementOffsetTop > draggableOffsetTop)
-            y = y - height;
-        if (!translateY && elementOffsetTop > draggableOffsetTop)
-            y = y + height;
-
-        if (initialDirection !== direction && direction === 'up' && placeholderIndex >= draggableIndex)
-            y = y - height;
-        if (initialDirection !== direction && direction === 'down' && placeholderIndex <= draggableIndex)
-            y = y + height;
-
-        return y;
     }
 
     function getComputedTranslation(element) {

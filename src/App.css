@@ -1,6 +1,6 @@
 body {
   touch-action: none; /* allow vertical scroll but prevent swipe to go back in msEdge */
-  background-color: fuchsia;
+  background-color: rosybrown;
   font-family: Roboto;
   overflow-x: hidden;
 }
