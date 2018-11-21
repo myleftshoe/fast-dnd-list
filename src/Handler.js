@@ -36,6 +36,8 @@ export default function (containerElement, props) {
 
         move(e) {
 
+            if (!draggable) return;
+
             draggable.position = [e.touches[0].clientX, e.touches[0].clientY];
             // scrollIfRequired();
 
@@ -73,6 +75,8 @@ export default function (containerElement, props) {
         },
 
         async release(e) {
+
+            if (!draggable) return { oldIndex: null, newIndex: null };
 
             const oldIndex = draggableIndex;
             const newIndex = placeholderIndex;
