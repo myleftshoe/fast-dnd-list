@@ -35,10 +35,13 @@ export default function (containerElement, props) {
         },
 
         move(e) {
-
             if (!draggable) return;
-
             draggable.position = [e.touches[0].clientX, e.touches[0].clientY];
+            requestAnimationFrame(this.handleMove);
+        },
+
+        handleMove(e) {
+
             // scrollIfRequired();
 
             const { direction, dimensions: { height } } = draggable;
