@@ -13,6 +13,15 @@ export default function Draggable(element, props) {
     let currentPosition = null;
     let direction = null;
 
+    const { offsetLeft: left, offsetTop: top, offsetHeight: height, offsetWidth: width } = element;
+    const { marginTop, marginBottom, marginLeft, marginRight } = window.getComputedStyle(element);
+
+    const initialCenter = [left + width / 2, top + height / 2];
+    const dimensions = {
+        width: width + Math.max(parseInt(marginLeft), parseInt(marginRight)),
+        height: height + Math.max(parseInt(marginTop), parseInt(marginBottom)),
+    }
+
     return {
 
         get element() { return element },
@@ -26,24 +35,17 @@ export default function Draggable(element, props) {
             ]
         },
 
-        get dimensions() {
-            const { marginTop, marginBottom, marginLeft, marginRight } = window.getComputedStyle(element);
-            return {
-                width: element.offsetWidth + Math.max(parseInt(marginLeft), parseInt(marginRight)),
-                height: element.offsetHeight + Math.max(parseInt(marginTop), parseInt(marginBottom)),
-            }
-        },
-
-        get initialCenter() {
-            const { offsetLeft: left, offsetTop: top, offsetHeight: height, offsetWidth: width } = element;
-            return [left + width / 2, top + height / 2];
-        },
+        get dimensions() { return dimensions },
 
         get absoluteCenter() {
-            const { left, top, height, width } = element.getBoundingClientRect();
-            return [left + width / 2, top + height / 2];
-            // return [element.offsetLeft + this.dimensions.width / 2, element.offsetTop + this.dimensions.height / 2];
+            return [initialCenter[0] + this.displacement[0], initialCenter[1] + this.displacement[1]];
         },
+
+        // get absoluteCenter() {
+        //     const { left, top, height, width } = element.getBoundingClientRect();
+        //     return [left + width / 2, top + height / 2];
+        //     // return [element.offsetLeft + this.dimensions.width / 2, element.offsetTop + this.dimensions.height / 2];
+        // },
 
         set position(position) {
             if (currentPosition) {

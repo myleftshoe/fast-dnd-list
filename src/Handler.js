@@ -6,6 +6,19 @@ export default function (container, props) {
     let draggableIndex;
     let placeholderIndex;
     let elements;
+    let elementCache;
+
+    function populateElementCache() {
+
+        elementCache = [];
+
+        const count = elements.length;
+        for (let i = 0; i < count; i++) {
+            const element = elements[i];
+            elementCache.push({ element, top: element.offsetTop, height: element.offsetHeight, translateY: 0 });
+        }
+    }
+
 
     return {
 
@@ -25,6 +38,8 @@ export default function (container, props) {
 
             elements.splice(draggableIndex, 1);
 
+            populateElementCache();
+
         },
 
         move(e) {
@@ -39,27 +54,32 @@ export default function (container, props) {
 
             const { direction, dimensions: { height } } = draggable;
 
+            const draggableCenterY = draggable.absoluteCenter[1];
+
             if (direction === 'down') {
                 for (placeholderIndex; placeholderIndex < elements.length; placeholderIndex++) {
-                    const element = elements[placeholderIndex];
-                    const top = element.getBoundingClientRect().top;
-                    if (top > draggable.absoluteCenter[1]) break;
-                    translate(element, -height);
+                    const element = elementCache[placeholderIndex];
+                    if (element.top > draggableCenterY) break;
+                    element.top -= height;
+                    element.translateY -= height;
+                    translate(element);
                 }
             }
             else if (direction === 'up') {
                 for (placeholderIndex; placeholderIndex > 0; placeholderIndex--) {
-                    const element = elements[placeholderIndex - 1];
-                    const bottom = element.getBoundingClientRect().top + element.offsetHeight;
-                    if (bottom < draggable.absoluteCenter[1]) break;
-                    translate(element, height);
+                    const element = elementCache[placeholderIndex - 1];
+                    const bottom = element.top + element.height;
+                    if (bottom < draggableCenterY) break;
+                    element.top += height;
+                    element.translateY += height;
+                    translate(element);
                 }
             }
 
-            function translate(element, y) {
+            function translate({ element, translateY = 0 }) {
                 element.style.willChange = 'transform';
                 element.style['transition'] = 'transform .2s ease-in-out';
-                element.style['transform'] = `translateY(${y + getTranslateY(element)}px)`;
+                element.style['transform'] = `translateY(${translateY}px)`;
             }
 
         },
