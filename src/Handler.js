@@ -9,31 +9,28 @@ export default function (containerElement, props) {
     }
 
     let draggable;
-    let last;
     let draggableIndex;
     let placeholderIndex;
-    let lastDirection;
-    let directionChangeCount;
+    let initialDirection;
     let elements;
+    let lastElement;
 
     return {
 
         grasp(e) {
 
-            directionChangeCount = -1;
             if (e.target === container.element) return;
 
             draggable = new Draggable(e.target, props);
             draggable.grasp(draggable);
 
-            placeholderIndex = container.children().indexOf(draggable.element);
+            draggableIndex = container.indexOf(draggable.element);
+            placeholderIndex = draggableIndex;
 
             elements = container.children();
-
-            draggableIndex = container.indexOf(draggable.element);
             elements.splice(draggableIndex, 1);
 
-            last = { element: draggable.element, direction: null };
+            lastElement = draggable.element;
 
         },
 
@@ -44,39 +41,34 @@ export default function (containerElement, props) {
 
             const { direction, dimensions: { height } } = draggable;
 
-            if (direction !== lastDirection)
-                directionChangeCount++;
+            if (!initialDirection) initialDirection = direction;
 
             if (direction === 'down') {
                 for (let i = placeholderIndex; i < elements.length; i++) {
                     const element = elements[i];
-                    const translateY = Number((element.style.transform.match(/-?\d+/g) || [0])[0]);
-                    const { top } = element.getBoundingClientRect();
-                    console.log('eeee', top);
+                    const top = element.getBoundingClientRect().top;
                     if (top > draggable.absoluteCenter[1]) break;
-                    element.style.willChange = 'transform';
-                    element.style['transition'] = 'transform .2s ease-in-out';
-                    element.style['transform'] = `translateY(${-height + translateY}px)`;
-                    last.element = element;
+                    translate(element, -height)
+                    lastElement = element;
                     placeholderIndex++;
                 }
             }
             else if (direction === 'up') {
                 for (let i = placeholderIndex - 1; i >= 0; i--) {
                     const element = elements[i];
-                    const translateY = Number((element.style.transform.match(/-?\d+/g) || [0])[0]);
-                    const { top } = element.getBoundingClientRect();
-                    console.log('eeee', top);
-                    if (top + element.offsetHeight < draggable.absoluteCenter[1]) break;
-                    element.style.willChange = 'transform';
-                    element.style['transition'] = 'transform .2s ease-in-out';
-                    element.style['transform'] = `translateY(${height + translateY}px)`;
-                    last.element = element;
+                    const bottom = element.getBoundingClientRect().top + element.offsetHeight;
+                    if (bottom < draggable.absoluteCenter[1]) break;
+                    translate(element, height)
+                    lastElement = element;
                     placeholderIndex--;
                 }
             }
 
-            lastDirection = direction;
+            function translate(element, y) {
+                element.style.willChange = 'transform';
+                element.style['transition'] = 'transform .2s ease-in-out';
+                element.style['transform'] = `translateY(${y + getTranslateY(element)}px)`;
+            }
 
         },
 
@@ -135,48 +127,34 @@ export default function (containerElement, props) {
 
     function getFinalPosition() {
 
-        const elementOffsetTop = last.element.offsetTop;
+        const elementOffsetTop = lastElement.offsetTop;
         const draggableOffsetTop = draggable.element.offsetTop;
-
-        const [, translateY] = getElementTranslation(last.element);
-
-        const height = draggable.dimensions;
+        const [, translateY] = getComputedTranslation(lastElement);
+        const { direction, dimensions: { height } } = draggable;
 
         let y = elementOffsetTop - draggableOffsetTop;
-        if (translateY === 0) {
-            let off = height;
-            if (elementOffsetTop > draggableOffsetTop)
-                off = -off;
-            y = y + off;
-        }
 
-        console.log('ffffffff', y, directionChangeCount, lastDirection);
+        if (!translateY && elementOffsetTop > draggableOffsetTop)
+            y = y - height;
+        if (!translateY && elementOffsetTop > draggableOffsetTop)
+            y = y + height;
 
-        if (!(directionChangeCount % 2) && lastDirection === 'up' && placeholderIndex >= draggableIndex)
-            y = y - 62;
-        if (!(directionChangeCount % 2) && lastDirection === 'down' && placeholderIndex <= draggableIndex)
-            y = y + 62;
-
-        console.log('ffffffff', y);
+        if (initialDirection !== direction && direction === 'up' && placeholderIndex >= draggableIndex)
+            y = y - height;
+        if (initialDirection !== direction && direction === 'down' && placeholderIndex <= draggableIndex)
+            y = y + height;
 
         return y;
     }
 
-    function getElementTranslation(element) {
+    function getComputedTranslation(element) {
         const transformMatrix = window.getComputedStyle(element).getPropertyValue('transform');
         const [, , , , x, y] = transformMatrix.match(/-?\d+/g) || [0, 0, 0, 0, 0, 0];
         return [x, y]
     }
 
-    function getElementUnderDraggable() {
-        let element = null;
-        const [cx, cy] = draggable.absoluteCenter;
-
-        element = document.elementFromPoint(cx, cy);
-        if (container.indexOf(element) < 0)
-            element = null;
-
-        return element;
+    function getTranslateY(element) {
+        return Number((element.style.transform.match(/-?\d+/g) || [0])[0])
     }
 
 }
