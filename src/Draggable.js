@@ -61,6 +61,8 @@ export default function Draggable(element, props) {
             element.style.transform = `translate(${x}px,${y}px)`;
         },
 
+        get position() { return currentPosition },
+
         grasp() {
             element.style.willChange = 'transform';
             element.style.zIndex = 999;
@@ -75,17 +77,21 @@ export default function Draggable(element, props) {
             if (currentPosition === startPosition)
                 return Promise.resolve();
             const event = fireAndForget(element, "transitionend");
-            element.style.transition = transitions.moveIntoPlace;
-            element.style.transform = `translate(0px,${y - element.offsetTop}px)`;
+            requestAnimationFrame(() => {
+                element.style.transition = transitions.moveIntoPlace;
+                element.style.transform = `translate(0px,${y - element.offsetTop}px)`;
+            });
             await event;
             return event;
         },
 
         async settleIntoPlace() {
             const event = fireAndForget(element, "transitionend");
-            element.classList.remove(props.dragClassName);
-            element.classList.remove('shadow');
-            element.style.transition = transitions.settleIntoPlace;
+            requestAnimationFrame(() => {
+                element.classList.remove(props.dragClassName);
+                element.classList.remove('shadow');
+                element.style.transition = transitions.settleIntoPlace;
+            });
             await event;
         },
 
