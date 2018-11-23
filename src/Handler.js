@@ -86,7 +86,7 @@ export default function (container, props) {
                         if (element.top > draggableCenterY) break;
                         element.top -= height;
                         element.translateY -= height;
-                        translate(element);
+                        shift(element);
                     }
                 }
                 else if (direction === 'up') {
@@ -96,7 +96,7 @@ export default function (container, props) {
                         if (bottom < draggableCenterY) break;
                         element.top += height;
                         element.translateY += height;
-                        translate(element);
+                        shift(element);
                     }
                 }
 
@@ -106,7 +106,7 @@ export default function (container, props) {
                     rafId = requestAnimationFrame(repeatUntilNextTouchMove);
             }
 
-            function translate({ element, translateY = 0 }) {
+            function shift({ element, translateY = 0 }) {
                 element.style.willChange = 'transform';
                 element.style['transition'] = 'transform .2s ease-in-out';
                 element.style['transform'] = `translateY(${translateY}px)`;
