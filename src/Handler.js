@@ -37,14 +37,15 @@ export default function (container, props) {
             draggable = new Draggable(e.target, props);
 
             isHolding = setTimeout(() => {
-                cancelHold();
+                isHolding = undefined;
                 draggable.grasp();
             }, 300);
 
             // Get everything ready before isHolding fires
+
+            elements = Array.prototype.slice.call(container.children);
             // [...container.children], container.children.slice(), Array.from
             // do not work in ms edge.
-            elements = Array.prototype.slice.call(container.children);
 
             draggableIndex = elements.indexOf(draggable.element);
             placeholderIndex = draggableIndex;
@@ -57,15 +58,8 @@ export default function (container, props) {
 
         move(e) {
 
-            if (isHolding) {
-                cancelHold();
-                draggable = undefined;
-                return;
-            }
+            if (prevent()) return;
 
-            if (!draggable) return;
-
-            cancelAnimationFrame(rafId);
             rafId = requestAnimationFrame(repeatUntilNextTouchMove);
 
             const [x, y] = [e.touches[0].clientX, e.touches[0].clientY];
@@ -73,9 +67,12 @@ export default function (container, props) {
             // Allows auto scroll to continue when draggable is held in same place
             function repeatUntilNextTouchMove() {
 
-                const { scrollAmount, offset } = scrollIfRequired();
+                const [scrollTop, scrollOffset] = getScrollValue();
 
-                draggable.position = [x, y + scrollAmount];
+                container.scrollTop = scrollTop;
+                // scrollable.scrollBy(0, offset) does not work on MS Edge mobile
+
+                draggable.position = [x, y + scrollTop];
 
                 const { direction, dimensions: { height } } = draggable;
                 const draggableCenterY = draggable.absoluteCenter[1];
@@ -100,7 +97,7 @@ export default function (container, props) {
                     }
                 }
 
-                if (placeholderIndex <= 0 || placeholderIndex >= elementCache.length || offset === 0)
+                if (placeholderIndex <= 0 || placeholderIndex >= elementCache.length || scrollOffset === 0)
                     cancelAnimationFrame(rafId);
                 else
                     rafId = requestAnimationFrame(repeatUntilNextTouchMove);
@@ -116,18 +113,7 @@ export default function (container, props) {
 
         async release(e) {
 
-            if (isHolding) {
-                cancelHold();
-                draggable = undefined;
-                return {};
-            }
-
-            if (!draggable) return {};
-
-            cancelAnimationFrame(rafId);
-
-            const oldIndex = draggableIndex;
-            const newIndex = placeholderIndex;
+            if (prevent()) return {};
 
             await draggable.release(0, container.children[placeholderIndex].offsetTop);
 
@@ -136,16 +122,26 @@ export default function (container, props) {
                 element.style.transform = null;
             });
 
-            return { oldIndex, newIndex }
+            return { oldIndex: draggableIndex, newIndex: placeholderIndex }
         }
     }
 
-    function cancelHold() {
-        clearTimeout(isHolding);
-        isHolding = undefined;
+    function prevent() {
+
+        if (isHolding) {
+            clearTimeout(isHolding);
+            isHolding = undefined;
+            draggable = undefined;
+        }
+
+        if (!draggable) return true;
+
+        cancelAnimationFrame(rafId);
+
+        return false;
     }
 
-    function scrollIfRequired() {
+    function getScrollValue() {
 
         // let scrollContainer = draggable.element.parentNode;
         // while (scrollContainer) {
@@ -172,11 +168,9 @@ export default function (container, props) {
             offset = Math.max(-triggerOffset, topOffset - triggerOffset);
         }
 
-        const scrollAmount = Math.max(0, Math.min(maxScrollTop, scrollable.scrollTop + offset / 4));
-        // scrollable.scrollBy(0, offset) does not work on MS Edge mobile
-        scrollable.scrollTop = scrollAmount;
+        const top = Math.max(0, Math.min(maxScrollTop, scrollable.scrollTop + offset / 4));
 
-        return { scrollAmount, offset };
+        return [top, offset];
     }
 
     function getComputedTranslation(element) {
