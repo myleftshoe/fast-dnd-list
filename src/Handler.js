@@ -24,7 +24,7 @@ export default function (container, props) {
 
             isHolding = delayGrasp(300);
 
-            // Get everything ready before isHolding fires
+            // Get everything ready before delay expires
             const elements = Array.from(container.children);
 
             draggableIndex = elements.indexOf(draggable.element);
