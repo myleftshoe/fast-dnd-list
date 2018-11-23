@@ -19,6 +19,12 @@ export default function (container, props) {
         }
     }
 
+    function printElementCache() {
+        console.table(elementCache.map(element => {
+            const { element: { innerText: item }, top, translateY } = element;
+            return { item, top, translateY }
+        }));
+    }
 
     return {
 
@@ -40,22 +46,26 @@ export default function (container, props) {
 
             populateElementCache();
 
+            printElementCache();
+
+
         },
 
         move(e) {
             if (!draggable) return;
-            draggable.position = [e.touches[0].clientX, e.touches[0].clientY];
-            requestAnimationFrame(this.handleMove);
+            const position = [e.touches[0].clientX, e.touches[0].clientY];
+            requestAnimationFrame(() => this.handleMove(position));
         },
 
-        handleMove(e) {
+        handleMove([x, y]) {
 
-            // scrollIfRequired();
+            const scrollAmount = scrollIfRequired();
+
+            draggable.position = [x, y + scrollAmount];
 
             const { direction, dimensions: { height } } = draggable;
 
             const draggableCenterY = draggable.absoluteCenter[1];
-
             if (direction === 'down') {
                 for (placeholderIndex; placeholderIndex < elements.length; placeholderIndex++) {
                     const element = elementCache[placeholderIndex];
@@ -85,6 +95,9 @@ export default function (container, props) {
         },
 
         async release(e) {
+
+            // console.table([{ draggable: draggable.element.innerText, centerY: draggable.absoluteCenter[1], translateY: draggable.element.style.transform }])
+            // printElementCache();
 
             if (!draggable) return { oldIndex: null, newIndex: null };
 
@@ -128,15 +141,9 @@ export default function (container, props) {
         else if (topOffset < triggerOffset) {
             offset = Math.max(-triggerOffset, topOffset - triggerOffset);
         }
-        // console.log(maxScrollTop, scrollable.scrollTop, offset);
         const scrollAmount = Math.max(0, Math.min(maxScrollTop, scrollable.scrollTop + offset));
-        console.log(scrollAmount, document.body.scrollTop);
         scrollable.scrollTop = scrollAmount;
-        // console.log(scrollable, scrollable.scrollTop);
-        // window.scrollTop = scrollAmount;
-        // scrollable.scrollTop = scrollable.scrollTop + 10;
-        // document.documentElement.scrollTop = document.documentElement.scrollTop + scrollAmount;
-        // console.log(document.documentElement.scrollTop);
+        return scrollAmount;
     }
 
     function getComputedTranslation(element) {
@@ -146,7 +153,7 @@ export default function (container, props) {
     }
 
     function getTranslateY(element) {
-        return Number((element.style.transform.match(/-?\d+/g) || [0])[0])
+        return Number((element.style.transform.match(/-?\d+/g) || [0])[1])
     }
 
 }
