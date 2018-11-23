@@ -46,9 +46,6 @@ export default function (container, props) {
 
             populateElementCache();
 
-            printElementCache();
-
-
         },
 
         move(e) {
