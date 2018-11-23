@@ -8,6 +8,7 @@ export default function (container, props) {
     let elements;
     let elementCache;
     let rafId;
+    let isHolding;
 
     function populateElementCache() {
 
@@ -33,8 +34,14 @@ export default function (container, props) {
 
             if (e.target === container) return;
 
-            draggable = new Draggable(e.target, props);
-            draggable.grasp(draggable);
+            const element = e.target;
+
+            draggable = new Draggable(element, props);
+
+            isHolding = setTimeout(() => {
+                cancelHold();
+                draggable.grasp();
+            }, 300);
 
             // [...container.children], container.children.slice(), Array.from
             // do not work in ms edge.
@@ -54,6 +61,12 @@ export default function (container, props) {
             if (!draggable) return;
 
             const [x, y] = [e.touches[0].clientX, e.touches[0].clientY];
+
+            if (isHolding) {
+                cancelHold();
+                draggable = undefined;
+                return;
+            }
 
             cancelAnimationFrame(rafId);
 
@@ -99,6 +112,13 @@ export default function (container, props) {
         },
 
         async release(e) {
+
+            if (isHolding) {
+                cancelHold();
+                draggable = undefined;
+                return {};
+            }
+
             cancelAnimationFrame(rafId);
 
             // console.table([{ draggable: draggable.element.innerText, centerY: draggable.absoluteCenter[1], translateY: draggable.element.style.transform }])
@@ -118,6 +138,11 @@ export default function (container, props) {
 
             return { oldIndex, newIndex }
         }
+    }
+
+    function cancelHold() {
+        clearTimeout(isHolding);
+        isHolding = undefined;
     }
 
     function scrollIfRequired() {
