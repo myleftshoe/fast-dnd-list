@@ -34,15 +34,14 @@ export default function (container, props) {
 
             if (e.target === container) return;
 
-            const element = e.target;
-
-            draggable = new Draggable(element, props);
+            draggable = new Draggable(e.target, props);
 
             isHolding = setTimeout(() => {
                 cancelHold();
                 draggable.grasp();
             }, 300);
 
+            // Get everything ready before isHolding fires
             // [...container.children], container.children.slice(), Array.from
             // do not work in ms edge.
             elements = Array.prototype.slice.call(container.children);
@@ -58,26 +57,29 @@ export default function (container, props) {
 
         move(e) {
 
-            if (!draggable) return;
-
-            const [x, y] = [e.touches[0].clientX, e.touches[0].clientY];
-
             if (isHolding) {
                 cancelHold();
                 draggable = undefined;
                 return;
             }
 
-            cancelAnimationFrame(rafId);
+            if (!draggable) return;
 
+            cancelAnimationFrame(rafId);
             rafId = requestAnimationFrame(repeatUntilNextTouchMove);
+
+            const [x, y] = [e.touches[0].clientX, e.touches[0].clientY];
 
             // Allows auto scroll to continue when draggable is held in same place
             function repeatUntilNextTouchMove() {
+
                 const { scrollAmount, offset } = scrollIfRequired();
+
                 draggable.position = [x, y + scrollAmount];
+
                 const { direction, dimensions: { height } } = draggable;
                 const draggableCenterY = draggable.absoluteCenter[1];
+
                 if (direction === 'down') {
                     for (placeholderIndex; placeholderIndex < elements.length; placeholderIndex++) {
                         const element = elementCache[placeholderIndex];
@@ -97,6 +99,7 @@ export default function (container, props) {
                         translate(element);
                     }
                 }
+
                 if (placeholderIndex <= 0 || placeholderIndex >= elementCache.length || offset === 0)
                     cancelAnimationFrame(rafId);
                 else
@@ -119,12 +122,9 @@ export default function (container, props) {
                 return {};
             }
 
+            if (!draggable) return {};
+
             cancelAnimationFrame(rafId);
-
-            // console.table([{ draggable: draggable.element.innerText, centerY: draggable.absoluteCenter[1], translateY: draggable.element.style.transform }])
-            // printElementCache();
-
-            if (!draggable) return { oldIndex: null, newIndex: null };
 
             const oldIndex = draggableIndex;
             const newIndex = placeholderIndex;
