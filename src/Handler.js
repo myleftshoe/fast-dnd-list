@@ -5,28 +5,14 @@ export default function (container, props) {
     let draggable;
     let draggableIndex;
     let placeholderIndex;
-    let elements;
     let elementCache;
     let rafId;
     let isHolding;
 
-    function populateElementCache() {
-
-        elementCache = [];
-
-        const count = elements.length;
-        for (let i = 0; i < count; i++) {
-            const element = elements[i];
-            elementCache.push({ element, top: element.offsetTop, height: element.offsetHeight, translateY: 0 });
-        }
-    }
-
-    function printElementCache() {
-        console.table(elementCache.map(element => {
-            const { element: { innerText: item }, top, translateY } = element;
-            return { item, top, translateY }
-        }));
-    }
+    const delayGrasp = delay => setTimeout(() => {
+        isHolding = undefined;
+        draggable.grasp();
+    }, delay);
 
     return {
 
@@ -36,23 +22,16 @@ export default function (container, props) {
 
             draggable = new Draggable(e.target, props);
 
-            isHolding = setTimeout(() => {
-                isHolding = undefined;
-                draggable.grasp();
-            }, 300);
+            isHolding = delayGrasp(300);
 
             // Get everything ready before isHolding fires
-
-            elements = Array.prototype.slice.call(container.children);
-            // [...container.children], container.children.slice(), Array.from
-            // do not work in ms edge.
+            const elements = Array.from(container.children);
 
             draggableIndex = elements.indexOf(draggable.element);
             placeholderIndex = draggableIndex;
 
             elements.splice(draggableIndex, 1);
-
-            populateElementCache();
+            populateElementCache(elements);
 
         },
 
@@ -78,7 +57,7 @@ export default function (container, props) {
                 const draggableCenterY = draggable.absoluteCenter[1];
 
                 if (direction === 'down') {
-                    for (placeholderIndex; placeholderIndex < elements.length; placeholderIndex++) {
+                    for (placeholderIndex; placeholderIndex < elementCache.length; placeholderIndex++) {
                         const element = elementCache[placeholderIndex];
                         if (element.top > draggableCenterY) break;
                         element.top -= height;
@@ -117,13 +96,29 @@ export default function (container, props) {
 
             await draggable.release(0, container.children[placeholderIndex].offsetTop);
 
-            elements.forEach(element => {
+            elementCache.forEach(({ element }) => {
                 element.style.transition = null;
                 element.style.transform = null;
             });
 
             return { oldIndex: draggableIndex, newIndex: placeholderIndex }
         }
+    }
+
+    function populateElementCache(elements) {
+
+        elementCache = [];
+        for (let i = 0; i < elements.length; i++) {
+            const element = elements[i];
+            elementCache.push({ element, top: element.offsetTop, height: element.offsetHeight, translateY: 0 });
+        }
+    }
+
+    function printElementCache() {
+        console.table(elementCache.map(element => {
+            const { element: { innerText: item }, top, translateY } = element;
+            return { item, top, translateY }
+        }));
     }
 
     function prevent() {
