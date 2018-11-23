@@ -47,9 +47,8 @@ export default function (container, props) {
             function repeatUntilNextTouchMove() {
 
                 const [scrollTop, scrollOffset] = getScrollValue();
-
-                container.scrollTop = scrollTop;
                 // scrollable.scrollBy(0, offset) does not work on MS Edge mobile
+                container.scrollTop = scrollTop;
 
                 draggable.position = [x, y + scrollTop];
 
