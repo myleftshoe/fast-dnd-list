@@ -1,4 +1,5 @@
 import Draggable from './Draggable';
+import ElementCache from './ElementCache';
 
 export default function (container, props) {
 
@@ -31,7 +32,7 @@ export default function (container, props) {
             placeholderIndex = draggableIndex;
 
             elements.splice(draggableIndex, 1);
-            populateElementCache(elements);
+            elementCache = new ElementCache(elements);
 
         },
 
@@ -56,8 +57,8 @@ export default function (container, props) {
                 const draggableCenterY = draggable.absoluteCenter[1];
 
                 if (direction === 'down') {
-                    for (placeholderIndex; placeholderIndex < elementCache.length; placeholderIndex++) {
-                        const element = elementCache[placeholderIndex];
+                    for (placeholderIndex; placeholderIndex < elementCache.count; placeholderIndex++) {
+                        const element = elementCache.get(placeholderIndex);
                         if (element.top > draggableCenterY) break;
                         element.top -= height;
                         element.translateY -= height;
@@ -66,7 +67,7 @@ export default function (container, props) {
                 }
                 else if (direction === 'up') {
                     for (placeholderIndex; placeholderIndex > 0; placeholderIndex--) {
-                        const element = elementCache[placeholderIndex - 1];
+                        const element = elementCache.get(placeholderIndex - 1);
                         const bottom = element.top + element.height;
                         if (bottom < draggableCenterY) break;
                         element.top += height;
@@ -75,7 +76,7 @@ export default function (container, props) {
                     }
                 }
 
-                if (placeholderIndex <= 0 || placeholderIndex >= elementCache.length || scrollOffset === 0)
+                if (placeholderIndex <= 0 || placeholderIndex >= elementCache.count || scrollOffset === 0)
                     cancelAnimationFrame(rafId);
                 else
                     rafId = requestAnimationFrame(repeatUntilNextTouchMove);
@@ -95,29 +96,10 @@ export default function (container, props) {
 
             await draggable.release(0, container.children[placeholderIndex].offsetTop);
 
-            elementCache.forEach(({ element }) => {
-                element.style.transition = null;
-                element.style.transform = null;
-            });
+            elementCache.resetStyles();
 
             return { oldIndex: draggableIndex, newIndex: placeholderIndex }
         }
-    }
-
-    function populateElementCache(elements) {
-
-        elementCache = [];
-        for (let i = 0; i < elements.length; i++) {
-            const element = elements[i];
-            elementCache.push({ element, top: element.offsetTop, height: element.offsetHeight, translateY: 0 });
-        }
-    }
-
-    function printElementCache() {
-        console.table(elementCache.map(element => {
-            const { element: { innerText: item }, top, translateY } = element;
-            return { item, top, translateY }
-        }));
     }
 
     function prevent() {
