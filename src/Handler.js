@@ -137,7 +137,7 @@ export default function (container, props) {
         // scrollContainer = scrollContainer || document.body;
 
         const triggerOffset = 80;
-        let offset = 0;
+        const speedMultiplier = 0.25;
 
         const containerRect = container.getBoundingClientRect();
         const targetRect = draggable.element.getBoundingClientRect();
@@ -145,12 +145,13 @@ export default function (container, props) {
         const topOffset = targetRect.top - Math.max(containerRect.top, 0);
         const maxScrollTop = container.scrollHeight - Math.min(container.clientHeight, window.innerHeight);
 
+        let offset = 0;
         if (bottomOffset < triggerOffset)
             offset = Math.min(triggerOffset, triggerOffset - bottomOffset);
         else if (topOffset < triggerOffset)
             offset = Math.max(-triggerOffset, topOffset - triggerOffset);
 
-        const top = Math.max(0, Math.min(maxScrollTop, container.scrollTop + offset / 4));
+        const top = Math.max(0, Math.min(maxScrollTop, container.scrollTop + offset * speedMultiplier));
 
         return [top, offset];
     }
