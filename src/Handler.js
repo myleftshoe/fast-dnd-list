@@ -17,15 +17,6 @@ export default function (container, props) {
         draggable.grasp();
     }, delay);
 
-    function disableScrolling() {
-        container.addEventListener('touchmove', preventDefault);
-    }
-
-    function enableScrolling() {
-        container.removeEventListener('touchmove', preventDefault);
-    }
-
-
     return {
 
         grasp(e) {
@@ -59,18 +50,15 @@ export default function (container, props) {
             function repeatUntilNextTouchMove() {
 
                 const [scrollTop, scrollOffset] = getScrollValue();
-                // scrollable.scrollBy(0, offset) does not work on MS Edge mobile
                 container.scrollTop = scrollTop;
-
                 draggable.position = [x, y + scrollTop];
 
-                const { direction, dimensions: { height } } = draggable;
-                const draggableCenterY = draggable.absoluteCenter[1];
+                const { direction, dimensions: { height }, absoluteCenter: [, centerY] } = draggable;
 
                 if (direction === 'down') {
                     for (placeholderIndex; placeholderIndex < elementCache.count; placeholderIndex++) {
                         const element = elementCache.get(placeholderIndex);
-                        if (element.top > draggableCenterY) break;
+                        if (element.top > centerY) break;
                         element.top -= height;
                         element.translateY -= height;
                         shift(element);
@@ -80,7 +68,7 @@ export default function (container, props) {
                     for (placeholderIndex; placeholderIndex > 0; placeholderIndex--) {
                         const element = elementCache.get(placeholderIndex - 1);
                         const bottom = element.top + element.height;
-                        if (bottom < draggableCenterY) break;
+                        if (bottom < centerY) break;
                         element.top += height;
                         element.translateY += height;
                         shift(element);
@@ -115,6 +103,14 @@ export default function (container, props) {
         }
     }
 
+    function disableScrolling() {
+        container.addEventListener('touchmove', preventDefault);
+    }
+
+    function enableScrolling() {
+        container.removeEventListener('touchmove', preventDefault);
+    }
+
     function prevent() {
 
         if (isHolding) {
@@ -143,21 +139,18 @@ export default function (container, props) {
         const triggerOffset = 80;
         let offset = 0;
 
-        const scrollable = container;
-        const containerRect = scrollable.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
         const targetRect = draggable.element.getBoundingClientRect();
         const bottomOffset = Math.min(containerRect.bottom, window.innerHeight) - targetRect.bottom;
         const topOffset = targetRect.top - Math.max(containerRect.top, 0);
-        const maxScrollTop = container.scrollHeight - Math.min(scrollable.clientHeight, window.innerHeight);
+        const maxScrollTop = container.scrollHeight - Math.min(container.clientHeight, window.innerHeight);
 
-        if (bottomOffset < triggerOffset) {
+        if (bottomOffset < triggerOffset)
             offset = Math.min(triggerOffset, triggerOffset - bottomOffset);
-        }
-        else if (topOffset < triggerOffset) {
+        else if (topOffset < triggerOffset)
             offset = Math.max(-triggerOffset, topOffset - triggerOffset);
-        }
 
-        const top = Math.max(0, Math.min(maxScrollTop, scrollable.scrollTop + offset / 4));
+        const top = Math.max(0, Math.min(maxScrollTop, container.scrollTop + offset / 4));
 
         return [top, offset];
     }
