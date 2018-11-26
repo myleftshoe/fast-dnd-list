@@ -1,5 +1,6 @@
 import Draggable from './Draggable';
 import ElementCache from './ElementCache';
+import { preventDefault } from './events';
 
 export default function (container, props) {
 
@@ -12,8 +13,18 @@ export default function (container, props) {
 
     const delayGrasp = delay => setTimeout(() => {
         isHolding = undefined;
+        disableScrolling();
         draggable.grasp();
     }, delay);
+
+    function disableScrolling() {
+        container.addEventListener('touchmove', preventDefault);
+    }
+
+    function enableScrolling() {
+        container.removeEventListener('touchmove', preventDefault);
+    }
+
 
     return {
 
@@ -93,6 +104,8 @@ export default function (container, props) {
         async release(e) {
 
             if (prevent()) return {};
+
+            enableScrolling();
 
             await draggable.release(0, container.children[placeholderIndex].offsetTop);
 

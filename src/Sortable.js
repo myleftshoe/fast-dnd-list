@@ -17,19 +17,19 @@ export default function Sortable(props) {
     let handler;
 
     function onTouchStart(e) {
-        e.stopPropagation();
+        // e.stopPropagation();
         handler.grasp(e);
         props.onGrasp && props.onGrasp();
     }
 
     function onTouchMove(e) {
-        e.stopPropagation();
+        // e.stopPropagation();
         handler.move(e);
         props.Drag && props.onDrag();
     }
 
     async function onTouchEnd(e) {
-        e.stopPropagation();
+        // e.stopPropagation();
         const result = await handler.release(e);
         props.onDrop && props.onDrop(result)
     }
