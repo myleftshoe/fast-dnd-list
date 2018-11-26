@@ -79,6 +79,7 @@ export default function (container, props) {
                     cancelAnimationFrame(rafId);
                 else
                     rafId = requestAnimationFrame(repeatUntilNextTouchMove);
+
             }
 
             function shift({ element, translateY = 0 }) {
