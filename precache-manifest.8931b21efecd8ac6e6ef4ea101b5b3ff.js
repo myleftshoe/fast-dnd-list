@@ -4,19 +4,19 @@ self.__precacheManifest = [
     "url": "/fast-dnd-list/static/js/runtime~main.06a6e9b2.js"
   },
   {
-    "revision": "d80e97911e3af8fa6a54",
-    "url": "/fast-dnd-list/static/js/main.d80e9791.chunk.js"
+    "revision": "94cdac17b17fb627ccfc",
+    "url": "/fast-dnd-list/static/js/main.94cdac17.chunk.js"
   },
   {
     "revision": "9fa4b4c8a3f2bcb487d1",
     "url": "/fast-dnd-list/static/js/1.9fa4b4c8.chunk.js"
   },
   {
-    "revision": "d80e97911e3af8fa6a54",
-    "url": "/fast-dnd-list/static/css/main.58c55d2c.chunk.css"
+    "revision": "94cdac17b17fb627ccfc",
+    "url": "/fast-dnd-list/static/css/main.42a42213.chunk.css"
   },
   {
-    "revision": "4406382a972cada05042c4e0a231bcff",
+    "revision": "3b00aead5989937ef187d9d19f602d47",
     "url": "/fast-dnd-list/index.html"
   }
 ];
