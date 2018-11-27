@@ -13,6 +13,8 @@ export default function elementCache(elements) {
 
         get count() { return elementCache.length },
 
+        removeAt(index) { elementCache.splice(index, 1) },
+
         resetStyles() {
             elementCache.forEach(({ element }) => {
                 element.style.transition = null;

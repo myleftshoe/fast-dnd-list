@@ -7,34 +7,29 @@ export default function (container, props) {
     let draggable;
     let draggableIndex;
     let placeholderIndex;
-    let elementCache;
+    const children = Array.from(container.children);
+    let elementCache = new ElementCache(children);
     let rafId;
     let isHolding;
 
-    const delayGrasp = delay => setTimeout(() => {
-        isHolding = undefined;
-        disableScrolling();
-        draggable.grasp();
-    }, delay);
-
     return {
 
-        grasp(e) {
+        async grasp(e) {
 
             if (e.target === container || draggable) return;
 
             draggable = new Draggable(e.target, props);
 
-            isHolding = delayGrasp(300);
-
-            // Get everything ready before delay expires
-            const elements = Array.from(container.children);
-
-            draggableIndex = elements.indexOf(draggable.element);
+            draggableIndex = children.indexOf(draggable.element);
             placeholderIndex = draggableIndex;
 
-            elements.splice(draggableIndex, 1);
-            elementCache = new ElementCache(elements);
+            elementCache.removeAt(draggableIndex);
+
+            isHolding = setTimeout(() => {
+                isHolding = undefined;
+                disableScrolling();
+                draggable.grasp();
+            }, 300);
 
         },
 
@@ -83,7 +78,7 @@ export default function (container, props) {
             }
 
             function shift({ element, translateY = 0 }) {
-                element.style.willChange = 'transform';
+                // element.style.willChange = 'transform';
                 element.style['transition'] = 'transform .2s ease-in-out';
                 element.style['transform'] = `translateY(${translateY}px)`;
             }

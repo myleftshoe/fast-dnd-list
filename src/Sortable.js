@@ -9,7 +9,6 @@ export default function Sortable(props) {
 
     useEffect(() => {
         handler = new Handler(containerRef.current, props);
-        return null;
     });
 
     const containerRef = useRef();
