@@ -21,7 +21,7 @@ export default function (container, props) {
 
         grasp(e) {
 
-            if (e.target === container) return;
+            if (e.target === container || draggable) return;
 
             draggable = new Draggable(e.target, props);
 
@@ -99,6 +99,8 @@ export default function (container, props) {
             await draggable.release(0, container.children[placeholderIndex].offsetTop);
 
             elementCache.resetStyles();
+
+            draggable = undefined;
 
             return { oldIndex: draggableIndex, newIndex: placeholderIndex }
         }
