@@ -75,34 +75,11 @@ export default function Draggable(element, props) {
             props.raised && element.classList.add('shadow');
         },
 
-        async moveIntoPlace(x, y) {
-            if (currentPosition === startPosition)
-                return Promise.resolve();
-            const event = fireAndForget(element, "transitionend");
-            requestAnimationFrame(() => {
-                element.style.transition = transitions.moveIntoPlace;
-                element.style.transform = `translate(0px,${y - element.offsetTop}px)`;
-            });
-            await event;
-            return event;
-        },
-
-        settleIntoPlace() {
-            const event = fireAndForget(element, "transitionend");
-            requestAnimationFrame(() => {
-                element.classList.remove(props.dragClassName);
-                element.classList.remove('shadow');
-                element.style.transition = transitions.settleIntoPlace;
-            });
-            return event;
-        },
-
-
-        animateIntoPlace(x, y, relativeIndex) {
+        moveIntoPlace(x, y) {
             return new Promise(resolve => {
-                const [_x, _y] = getComputedTranslation(element);
+                const { left, top } = element.getBoundingClientRect();
                 const keyframes = [
-                    { transform: `translate(${_x}px,${parseInt(_y) - this.dimensions.height * relativeIndex}px)` },
+                    { transform: `translate(${left - x}px,${top - y + this.dimensions.height}px)` },
                     { transform: `translate(${0}px,${0}px)` },
                 ];
                 const animation = element.animate(keyframes, {
@@ -119,8 +96,18 @@ export default function Draggable(element, props) {
             // return animation.finished;
         },
 
-        async release(x, y, relativeIndex) {
-            await this.animateIntoPlace(x, y, relativeIndex);
+        settleIntoPlace() {
+            const event = fireAndForget(element, "transitionend");
+            requestAnimationFrame(() => {
+                element.classList.remove(props.dragClassName);
+                element.classList.remove('shadow');
+                element.style.transition = transitions.settleIntoPlace;
+            });
+            return event;
+        },
+
+        async release(x, y) {
+            await this.moveIntoPlace(x, y);
             await this.settleIntoPlace();
             element.style.position = null;
             // element.style.pointerEvents = null;
