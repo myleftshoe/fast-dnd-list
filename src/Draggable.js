@@ -1,5 +1,6 @@
 import './Draggable.css';
 import { fireAndForget } from './events';
+import 'web-animations-js/web-animations.min';
 
 const transitions = {
     grasp: 'box-shadow .2s ease-in-out, background-color .2s ease-in-out',
