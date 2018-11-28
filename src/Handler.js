@@ -97,11 +97,11 @@ export default function (container, props) {
 
         drop() {
 
+            if (prevent()) return {};
+
             draggable.release(0, container.children[placeholderIndex].offsetTop, placeholderIndex - draggableIndex);
 
-
             draggable = undefined;
-
         }
     }
 
