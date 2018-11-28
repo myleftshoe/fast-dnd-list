@@ -85,19 +85,23 @@ export default function (container, props) {
 
         },
 
-        async release(e) {
+        release(e) {
 
             if (prevent()) return {};
 
             enableScrolling();
-
-            await draggable.release(0, container.children[placeholderIndex].offsetTop);
-
             elementCache.resetStyles();
+
+            return { oldIndex: draggableIndex, newIndex: placeholderIndex }
+        },
+
+        drop() {
+
+            draggable.release(0, container.children[placeholderIndex].offsetTop, placeholderIndex - draggableIndex);
+
 
             draggable = undefined;
 
-            return { oldIndex: draggableIndex, newIndex: placeholderIndex }
         }
     }
 

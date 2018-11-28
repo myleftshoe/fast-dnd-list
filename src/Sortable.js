@@ -27,10 +27,11 @@ export default function Sortable(props) {
         props.Drag && props.onDrag();
     }
 
-    async function onTouchEnd(e) {
+    function onTouchEnd(e) {
         // e.stopPropagation();
-        const result = await handler.release(e);
-        props.onDrop && props.onDrop(result)
+        const result = handler.release(e);
+        props.onDrop && props.onDrop(result);
+        handler.drop();
     }
 
     return <div

@@ -97,12 +97,13 @@ export default function Draggable(element, props) {
             return event;
         },
 
-        animateIntoPlace(x, y) {
+
+        animateIntoPlace(x, y, relativeIndex) {
             return new Promise(resolve => {
                 const [_x, _y] = getComputedTranslation(element);
                 const keyframes = [
-                    { transform: `translate(${_x}px,${_y}px)` },
-                    { transform: `translate(0px,${y - element.offsetTop}px)` },
+                    { transform: `translate(${_x}px,${parseInt(_y) - this.dimensions.height * relativeIndex}px)` },
+                    { transform: `translate(${0}px,${0}px)` },
                 ];
                 const animation = element.animate(keyframes, {
                     duration: 200,
@@ -110,15 +111,15 @@ export default function Draggable(element, props) {
                 });
                 animation.onfinish = () => {
                     element.style.transition = null;
-                    element.style.transform = `translate(0px,${y - element.offsetTop}px)`;
+                    element.style.transform = `translate(${0}px,${0}px)`;
                     resolve();
                 }
             });
             // return animation.finished;
         },
 
-        async release(x, y) {
-            await this.animateIntoPlace(x, y);
+        async release(x, y, relativeIndex) {
+            await this.animateIntoPlace(x, y, relativeIndex);
             await this.settleIntoPlace();
             element.style.position = null;
             // element.style.pointerEvents = null;
