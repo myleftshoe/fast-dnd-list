@@ -1,5 +1,6 @@
 import './Draggable.css';
 import { fireAndForget } from './events';
+import { getComputedTranslation } from './domUtils (not used)';
 
 const transitions = {
     grasp: 'box-shadow .2s ease-in-out, background-color .2s ease-in-out',
@@ -85,18 +86,38 @@ export default function Draggable(element, props) {
             return event;
         },
 
-        async settleIntoPlace() {
+        settleIntoPlace() {
             const event = fireAndForget(element, "transitionend");
             requestAnimationFrame(() => {
                 element.classList.remove(props.dragClassName);
                 element.classList.remove('shadow');
                 element.style.transition = transitions.settleIntoPlace;
             });
-            await event;
+            return event;
+        },
+
+        animateIntoPlace(x, y) {
+            return new Promise(resolve => {
+                const [_x, _y] = getComputedTranslation(element);
+                const keyframes = [
+                    { transform: `translate(${_x}px,${_y}px)` },
+                    { transform: `translate(0px,${y - element.offsetTop}px)` },
+                ];
+                const animation = element.animate(keyframes, {
+                    duration: 200,
+                    easing: 'ease-in-out',
+                });
+                animation.onfinish = () => {
+                    element.style.transition = null;
+                    element.style.transform = `translate(0px,${y - element.offsetTop}px)`;
+                    resolve();
+                }
+            });
+            // return animation.finished;
         },
 
         async release(x, y) {
-            await this.moveIntoPlace(x, y);
+            await this.animateIntoPlace(x, y);
             await this.settleIntoPlace();
             element.style.position = null;
             // element.style.pointerEvents = null;
