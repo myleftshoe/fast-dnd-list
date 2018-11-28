@@ -115,6 +115,7 @@ export default function Draggable(element, props) {
                     resolve();
                 }
             });
+            // Not supported in Chrome yet: (polyfill available but above Promise is simpler)
             // return animation.finished;
         },
 
