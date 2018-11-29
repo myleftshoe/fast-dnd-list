@@ -92,22 +92,21 @@ export default function (container, props) {
 
             enableScrolling();
 
-            return { oldIndex: draggableIndex, newIndex: placeholderIndex }
+            try { return { oldIndex: draggableIndex, newIndex: placeholderIndex } }
+
+            finally {
+
+                let unequalHeightAdjustment = 0;
+                if (draggable.direction === 'down')
+                    unequalHeightAdjustment = children[placeholderIndex].offsetHeight - draggable.element.offsetHeight;
+
+                draggable.release(0, children[placeholderIndex].offsetTop + unequalHeightAdjustment - scrollable.scrollTop + container.offsetTop);
+
+                elementCache.resetStyles();
+                draggable = undefined;
+
+            }
         },
-
-        drop() {
-
-            if (prevent()) return {};
-
-            let unequalHeightAdjustment = 0;
-            if (draggable.direction === 'down')
-                unequalHeightAdjustment = children[placeholderIndex].offsetHeight - draggable.element.offsetHeight;
-
-            draggable.release(0, children[placeholderIndex].offsetTop + unequalHeightAdjustment - scrollable.scrollTop + container.offsetTop);
-
-            elementCache.resetStyles();
-            draggable = undefined;
-        }
     }
 
     function disableScrolling() {

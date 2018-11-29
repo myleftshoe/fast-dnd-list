@@ -16,22 +16,18 @@ export default function Sortable(props) {
     let handler;
 
     function onTouchStart(e) {
-        // e.stopPropagation();
         handler.grasp(e);
         props.onGrasp && props.onGrasp();
     }
 
     function onTouchMove(e) {
-        // e.stopPropagation();
         handler.move(e);
         props.Drag && props.onDrag();
     }
 
     function onTouchEnd(e) {
-        // e.stopPropagation();
         const result = handler.release(e);
         props.onDrop && props.onDrop(result);
-        handler.drop();
     }
 
     return <div style={{ overflowY: 'scroll' }}>
