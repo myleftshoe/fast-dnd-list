@@ -100,7 +100,7 @@ export default function (container, props) {
                 if (draggable.direction === 'down')
                     unequalHeightAdjustment = children[placeholderIndex].offsetHeight - draggable.element.offsetHeight;
 
-                draggable.release(0, children[placeholderIndex].offsetTop + unequalHeightAdjustment - scrollable.scrollTop + container.offsetTop);
+                draggable.release(0, children[placeholderIndex].offsetTop - scrollable.scrollTop + container.offsetTop + unequalHeightAdjustment);
 
                 elementCache.resetStyles();
                 draggable = undefined;
