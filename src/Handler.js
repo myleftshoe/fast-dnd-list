@@ -4,6 +4,7 @@ import { preventDefault } from './events';
 
 export default function (container, props) {
 
+    const scrollable = container.parentNode;
     let draggable;
     let draggableIndex;
     let placeholderIndex;
@@ -45,7 +46,7 @@ export default function (container, props) {
             function repeatUntilNextTouchMove() {
 
                 const [scrollTop, scrollOffset] = getScrollValue();
-                container.scrollTop = scrollTop;
+                scrollable.scrollTop = scrollTop;
                 draggable.position = [x, y + scrollTop];
 
                 const { direction, dimensions: { height }, absoluteCenter: [, centerY] } = draggable;
@@ -99,18 +100,20 @@ export default function (container, props) {
 
             if (prevent()) return {};
 
-            draggable.release(0, elementCache.get(placeholderIndex).top - container.scrollTop);
+            draggable.release(0, elementCache.get(placeholderIndex).top - scrollable.scrollTop);
 
             draggable = undefined;
         }
     }
 
     function disableScrolling() {
-        container.addEventListener('touchmove', preventDefault);
+        scrollable.style.overflowY = 'hidden';
+        // scrollable.addEventListener('touchmove', preventDefault);
     }
 
     function enableScrolling() {
-        container.removeEventListener('touchmove', preventDefault);
+        scrollable.style.overflowY = 'scroll';
+        // scrollable.removeEventListener('touchmove', preventDefault);
     }
 
     function prevent() {
@@ -141,11 +144,11 @@ export default function (container, props) {
         const triggerOffset = 80;
         const speedMultiplier = 0.25;
 
-        const containerRect = container.getBoundingClientRect();
+        const scrollableRect = scrollable.getBoundingClientRect();
         const targetRect = draggable.element.getBoundingClientRect();
-        const bottomOffset = Math.min(containerRect.bottom, window.innerHeight) - targetRect.bottom;
-        const topOffset = targetRect.top - Math.max(containerRect.top, 0);
-        const maxScrollTop = container.scrollHeight - Math.min(container.clientHeight, window.innerHeight);
+        const bottomOffset = Math.min(scrollableRect.bottom, window.innerHeight) - targetRect.bottom;
+        const topOffset = targetRect.top - Math.max(scrollableRect.top, 0);
+        const maxScrollTop = scrollable.scrollHeight - Math.min(scrollable.clientHeight, window.innerHeight);
 
         let offset = 0;
         if (bottomOffset < triggerOffset)
@@ -153,7 +156,7 @@ export default function (container, props) {
         else if (topOffset < triggerOffset)
             offset = Math.max(-triggerOffset, topOffset - triggerOffset);
 
-        const top = Math.max(0, Math.min(maxScrollTop, container.scrollTop + offset * speedMultiplier));
+        const top = Math.max(0, Math.min(maxScrollTop, scrollable.scrollTop + offset * speedMultiplier));
 
         return [top, offset];
     }

@@ -34,15 +34,17 @@ export default function Sortable(props) {
         handler.drop();
     }
 
-    return <div
-        className='container'
-        ref={containerRef}
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
-        onContextMenu={preventDefault}
-    >
-        {props.children}
+    return <div className='wrapper'>
+        <div
+            className='container'
+            ref={containerRef}
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+            onContextMenu={preventDefault}
+        >
+            {props.children}
+        </div>
     </div>
 }
 

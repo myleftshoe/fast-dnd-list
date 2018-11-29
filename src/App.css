@@ -1,15 +1,19 @@
 body {
   margin:0;
   touch-action: none; /* allow vertical scroll but prevent swipe to go back in msEdge */
-  background-color: firebrick;
+  background-color: lightpink;
   font-family: Roboto;
   overflow: hidden;
 }
 
+.wrapper {
+  overflow-y: scroll
+}
+
 .container {
   height:100vh;
-  width:calc(100% - 3px);
-  overflow:auto;
+  width:calc(50% - 3px);
+  overflow-x:visible;
   touch-action: pan-y;
   user-select: none;
 }
