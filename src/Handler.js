@@ -53,10 +53,10 @@ export default function (containerElement, props) {
 
                 const { direction, dimensions: { height }, absoluteCenter: [centerX, centerY] } = draggable;
 
-                if (centerX > container.geometry.right || centerX < container.geometry.left) {
-                    rafId = requestAnimationFrame(repeatUntilNextTouchMove);
-                    return;
-                }
+                // if (centerX > container.geometry.right || centerX < container.geometry.left) {
+                //     rafId = requestAnimationFrame(repeatUntilNextTouchMove);
+                //     return;
+                // }
 
 
                 if (direction === 'down') {
