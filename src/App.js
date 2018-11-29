@@ -14,7 +14,7 @@ export default function App() {
     return <div className='list'>
         <Sortable dragClassName='drag-style' onDrop={onDrop}>
             {items.map(item =>
-                <div key={item} className='list-item'>{item}</div>)
+                <div key={item} className='list-item' style={{ height: item === 'Item 5' ? '70px' : item === 'Item 9' && '100px' }}>{item}</div>)
             }
         </Sortable>
     </div>

@@ -108,7 +108,11 @@ export default function (containerElement, props) {
 
             if (prevent()) return {};
 
-            draggable.release(0, children[placeholderIndex].offsetTop - scrollable.scrollTop + container.geometry.top);
+            let unequalHeightAdjustment = 0;
+            if (draggable.direction === 'down')
+                unequalHeightAdjustment = children[placeholderIndex].offsetHeight - draggable.element.offsetHeight;
+
+            draggable.release(0, children[placeholderIndex].offsetTop + unequalHeightAdjustment - scrollable.scrollTop + container.geometry.top);
 
             draggable = undefined;
         }
