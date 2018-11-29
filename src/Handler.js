@@ -136,14 +136,6 @@ export default function (container, props) {
 
     function getScrollValue() {
 
-        // let scrollContainer = draggable.element.parentNode;
-        // while (scrollContainer) {
-        //     if (scrollContainer === document.body) break;
-        //     if (scrollContainer.scrollHeight > scrollContainer.clientHeight && window.getComputedStyle(scrollContainer)['overflow-y'] !== 'visible') break;
-        //     scrollContainer = scrollContainer.parentNode;
-        // }
-        // scrollContainer = scrollContainer || document.body;
-
         const triggerOffset = 80;
         const speedMultiplier = 0.25;
 
