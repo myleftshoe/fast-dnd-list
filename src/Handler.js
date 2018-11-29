@@ -49,7 +49,7 @@ export default function (container, props) {
                 scrollable.scrollTop = scrollTop;
                 draggable.position = [x, y + scrollTop];
 
-                const { direction, dimensions: { height }, absoluteCenter: [centerX, centerY] } = draggable;
+                const { direction, dimensions: { height }, absoluteCenter: [, centerY] } = draggable;
 
                 if (direction === 'down') {
                     for (placeholderIndex; placeholderIndex < elementCache.count; placeholderIndex++) {
