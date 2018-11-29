@@ -15,7 +15,7 @@ export default function (container, props) {
 
     return {
 
-        async grasp(e) {
+        grasp(e) {
 
             if (e.target === container || draggable) return;
 
