@@ -13,6 +13,9 @@ export default function (container, props) {
     let rafId;
     let isHolding;
 
+    const { offsetLeft, offsetTop, offsetWidth, offsetHeight } = container;
+    const containerMeta = { left: offsetLeft, top: offsetTop, right: offsetLeft + offsetWidth, offsetWidth, height: offsetHeight, bottom: offsetTop + offsetHeight };
+
     return {
 
         async grasp(e) {
@@ -48,8 +51,12 @@ export default function (container, props) {
                 const [scrollTop, scrollOffset] = getScrollValue();
                 scrollable.scrollTop = scrollTop;
                 draggable.position = [x, y + scrollTop];
+                console.log(draggable.absoluteCenter, container.offsetWidth, container.offsetLeft);
 
-                const { direction, dimensions: { height }, absoluteCenter: [, centerY] } = draggable;
+                const { direction, dimensions: { height }, absoluteCenter: [centerX, centerY] } = draggable;
+
+                if (centerX > containerMeta.right || centerX < containerMeta.left) return;
+
 
                 if (direction === 'down') {
                     for (placeholderIndex; placeholderIndex < elementCache.count; placeholderIndex++) {
