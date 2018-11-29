@@ -1,16 +1,14 @@
 import Draggable from './Draggable';
 import ElementCache from './ElementCache';
 // import { preventDefault } from './events';
-import Container from './Container';
 
-export default function (containerElement, props) {
+export default function (container, props) {
 
-    const container = new Container(containerElement);
-    const scrollable = container.element.parentNode;
+    const scrollable = container.parentNode;
     let draggable;
     let draggableIndex;
     let placeholderIndex;
-    const children = Array.from(container.element.children);
+    const children = Array.from(container.children);
     let elementCache = new ElementCache(children);
     let rafId;
     let isHolding;
@@ -19,7 +17,7 @@ export default function (containerElement, props) {
 
         async grasp(e) {
 
-            if (e.target === container.element || draggable) return;
+            if (e.target === container || draggable) return;
 
             draggable = new Draggable(e.target, props);
 
@@ -52,12 +50,6 @@ export default function (containerElement, props) {
                 draggable.position = [x, y + scrollTop];
 
                 const { direction, dimensions: { height }, absoluteCenter: [centerX, centerY] } = draggable;
-
-                // if (centerX > container.geometry.right || centerX < container.geometry.left) {
-                //     rafId = requestAnimationFrame(repeatUntilNextTouchMove);
-                //     return;
-                // }
-
 
                 if (direction === 'down') {
                     for (placeholderIndex; placeholderIndex < elementCache.count; placeholderIndex++) {
@@ -111,7 +103,7 @@ export default function (containerElement, props) {
             if (draggable.direction === 'down')
                 unequalHeightAdjustment = children[placeholderIndex].offsetHeight - draggable.element.offsetHeight;
 
-            draggable.release(0, children[placeholderIndex].offsetTop + unequalHeightAdjustment - scrollable.scrollTop + container.geometry.top);
+            draggable.release(0, children[placeholderIndex].offsetTop + unequalHeightAdjustment - scrollable.scrollTop + container.offsetTop);
 
             elementCache.resetStyles();
             draggable = undefined;
