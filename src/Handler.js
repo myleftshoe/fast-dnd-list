@@ -1,26 +1,25 @@
 import Draggable from './Draggable';
 import ElementCache from './ElementCache';
 import { preventDefault } from './events';
+import Container from './Container';
 
-export default function (container, props) {
+export default function (containerElement, props) {
 
-    const scrollable = container.parentNode;
+    const container = new Container(containerElement);
+    const scrollable = container.element.parentNode;
     let draggable;
     let draggableIndex;
     let placeholderIndex;
-    const children = Array.from(container.children);
+    const children = Array.from(container.element.children);
     let elementCache = new ElementCache(children);
     let rafId;
     let isHolding;
-
-    const { offsetLeft, offsetTop, offsetWidth, offsetHeight } = container;
-    const containerMeta = { left: offsetLeft, top: offsetTop, right: offsetLeft + offsetWidth, offsetWidth, height: offsetHeight, bottom: offsetTop + offsetHeight };
 
     return {
 
         async grasp(e) {
 
-            if (e.target === container || draggable) return;
+            if (e.target === container.element || draggable) return;
 
             draggable = new Draggable(e.target, props);
 
@@ -51,11 +50,10 @@ export default function (container, props) {
                 const [scrollTop, scrollOffset] = getScrollValue();
                 scrollable.scrollTop = scrollTop;
                 draggable.position = [x, y + scrollTop];
-                console.log(draggable.absoluteCenter, container.offsetWidth, container.offsetLeft);
 
                 const { direction, dimensions: { height }, absoluteCenter: [centerX, centerY] } = draggable;
 
-                if (centerX > containerMeta.right || centerX < containerMeta.left) return;
+                if (centerX > container.geometry.right || centerX < container.geometry.left) return;
 
 
                 if (direction === 'down') {
