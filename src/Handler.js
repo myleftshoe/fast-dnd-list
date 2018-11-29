@@ -108,7 +108,7 @@ export default function (containerElement, props) {
 
             if (prevent()) return {};
 
-            draggable.release(0, elementCache.get(placeholderIndex).top - scrollable.scrollTop + container.geometry.top);
+            draggable.release(0, children[placeholderIndex].offsetTop - scrollable.scrollTop + container.geometry.top);
 
             draggable = undefined;
         }

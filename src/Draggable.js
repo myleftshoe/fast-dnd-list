@@ -86,7 +86,7 @@ export default function Draggable(element, props) {
             return new Promise(resolve => {
                 const { left, top } = element.getBoundingClientRect();
                 const keyframes = [
-                    { transform: `translate(${left - x - this.margins.left}px,${top - y + this.dimensions.height + this.margins.top}px)` },
+                    { transform: `translate(${left - x - this.margins.left}px,${top - y}px)` },
                     { transform: `translate(${0}px,${0}px)` },
                 ];
                 const animation = element.animate(keyframes, {

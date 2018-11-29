@@ -1,7 +1,7 @@
 body {
   margin:0;
   touch-action: none; /* allow vertical scroll but prevent swipe to go back in msEdge */
-  background-color: lightgrey;
+  background-color: mediumpurple;
   font-family: Roboto;
   overflow: hidden;
 }
@@ -9,16 +9,16 @@ body {
 .container {
   position: relative; /* Must be relative */
   height:100vh;
-  width:calc(50% - 3px);
+  width:calc(100% - 3px);
   overflow-x:visible;
   touch-action: pan-y;
   user-select: none;
 }
 
 .list-item {
-  width:100%;
+  width:calc(100% - 40px);
   height:50px;
-  margin: 2px 2px;
+  margin: 20px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
