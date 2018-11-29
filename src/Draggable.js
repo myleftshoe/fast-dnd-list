@@ -42,6 +42,14 @@ export default function Draggable(element, props) {
             return [initialCenter[0] + this.displacement[0], initialCenter[1] + this.displacement[1]];
         },
 
+        get margins() {
+            return {
+                top: parseInt(marginTop),
+                bottom: parseInt(marginBottom),
+                left: parseInt(marginLeft),
+                right: parseInt(marginRight),
+            }
+        },
         // get absoluteCenter() {
         //     const { left, top, height, width } = element.getBoundingClientRect();
         //     return [left + width / 2, top + height / 2];
@@ -78,7 +86,7 @@ export default function Draggable(element, props) {
             return new Promise(resolve => {
                 const { left, top } = element.getBoundingClientRect();
                 const keyframes = [
-                    { transform: `translate(${left - x}px,${top - y + this.dimensions.height}px)` },
+                    { transform: `translate(${left - x - this.margins.left}px,${top - y + this.dimensions.height + this.margins.top}px)` },
                     { transform: `translate(${0}px,${0}px)` },
                 ];
                 const animation = element.animate(keyframes, {

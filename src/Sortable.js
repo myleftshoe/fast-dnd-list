@@ -34,7 +34,7 @@ export default function Sortable(props) {
         handler.drop();
     }
 
-    return <div className='wrapper'>
+    return <div style={{ overflowY: 'scroll' }}>
         <div
             className='container'
             ref={containerRef}

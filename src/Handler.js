@@ -1,6 +1,6 @@
 import Draggable from './Draggable';
 import ElementCache from './ElementCache';
-import { preventDefault } from './events';
+// import { preventDefault } from './events';
 import Container from './Container';
 
 export default function (containerElement, props) {
@@ -53,7 +53,10 @@ export default function (containerElement, props) {
 
                 const { direction, dimensions: { height }, absoluteCenter: [centerX, centerY] } = draggable;
 
-                if (centerX > container.geometry.right || centerX < container.geometry.left) return;
+                if (centerX > container.geometry.right || centerX < container.geometry.left) {
+                    rafId = requestAnimationFrame(repeatUntilNextTouchMove);
+                    return;
+                }
 
 
                 if (direction === 'down') {
@@ -105,7 +108,7 @@ export default function (containerElement, props) {
 
             if (prevent()) return {};
 
-            draggable.release(0, elementCache.get(placeholderIndex).top - scrollable.scrollTop);
+            draggable.release(0, elementCache.get(placeholderIndex).top - scrollable.scrollTop + container.geometry.top);
 
             draggable = undefined;
         }

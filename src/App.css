@@ -6,11 +6,8 @@ body {
   overflow: hidden;
 }
 
-.wrapper {
-  overflow-y: scroll
-}
-
 .container {
+  position: relative; /* Must be relative */
   height:100vh;
   width:calc(50% - 3px);
   overflow-x:visible;
