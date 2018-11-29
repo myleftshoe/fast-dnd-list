@@ -38,9 +38,9 @@ export default function (container, props) {
 
             if (prevent()) return;
 
-            rafId = requestAnimationFrame(repeatUntilNextTouchMove);
-
             const [x, y] = [e.touches[0].clientX, e.touches[0].clientY];
+
+            rafId = requestAnimationFrame(repeatUntilNextTouchMove);
 
             // Allows auto scroll to continue when draggable is held in same place
             function repeatUntilNextTouchMove() {
