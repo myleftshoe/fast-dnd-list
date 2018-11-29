@@ -99,7 +99,6 @@ export default function (containerElement, props) {
             if (prevent()) return {};
 
             enableScrolling();
-            elementCache.resetStyles();
 
             return { oldIndex: draggableIndex, newIndex: placeholderIndex }
         },
@@ -114,6 +113,7 @@ export default function (containerElement, props) {
 
             draggable.release(0, children[placeholderIndex].offsetTop + unequalHeightAdjustment - scrollable.scrollTop + container.geometry.top);
 
+            elementCache.resetStyles();
             draggable = undefined;
         }
     }
