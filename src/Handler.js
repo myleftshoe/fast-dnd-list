@@ -15,11 +15,11 @@ export default function (container, props) {
 
     return {
 
-        grasp(e) {
+        grasp(element) {
 
-            if (e.target === container || draggable) return;
+            if (element === container || draggable) return;
 
-            draggable = new Draggable(e.target, props);
+            draggable = new Draggable(element, props);
 
             draggableIndex = children.indexOf(draggable.element);
             placeholderIndex = draggableIndex;
@@ -34,11 +34,9 @@ export default function (container, props) {
 
         },
 
-        move(e) {
+        move(x, y) {
 
             if (prevent()) return;
-
-            const [x, y] = [e.clientX, e.clientY];
 
             rafId = requestAnimationFrame(repeatUntilNextTouchMove);
 

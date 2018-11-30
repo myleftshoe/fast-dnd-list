@@ -20,18 +20,19 @@ export default function Sortable(props) {
     const containerRef = useRef();
 
     function start(e) {
+        if (e.target === containerRef.current) return;
         setStarted(true);
-        handler.grasp(e);
+        handler.grasp(e.target);
         props.onGrasp && props.onGrasp();
     }
 
     function move(e) {
-        handler.move(e);
+        handler.move(e.clientX, e.clientY);
         props.Drag && props.onDrag();
     }
 
-    function end(e) {
-        const result = handler.release(e);
+    function end() {
+        const result = handler.release();
         setStarted();
         props.onDrop && props.onDrop(result);
     }
