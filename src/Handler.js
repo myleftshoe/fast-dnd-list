@@ -1,6 +1,5 @@
 import Draggable from './Draggable';
 import ElementCache from './ElementCache';
-// import { preventDefault } from './events';
 
 export default function (container, props) {
 
@@ -109,11 +108,13 @@ export default function (container, props) {
 
     function disableScrolling() {
         scrollable.style.overflowY = 'hidden';
+        // scrollable.style.touchAction = 'none';
         // scrollable.addEventListener('touchmove', preventDefault);
     }
 
     function enableScrolling() {
         scrollable.style.overflowY = 'scroll';
+        // scrollable.style.touchAction = 'pan-y';
         // scrollable.removeEventListener('touchmove', preventDefault);
     }
 
