@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import Handler from './Handler';
 import { preventDefault } from './events';
@@ -7,41 +7,51 @@ import { preventDefault } from './events';
 
 export default function Sortable(props) {
 
+    let [handler, setHandler] = useState();
+    let [started, setStarted] = useState();
+
     useEffect(() => {
-        handler = new Handler(containerRef.current, props);
-    });
+        setHandler(new Handler(containerRef.current, props));
+    }, [props.children]);
+
+    // workaround to prevent mousedown event firing after 300ms when using touch
+    useEffect(() => { containerRef.current.ontouchstart = preventDefault })
 
     const containerRef = useRef();
 
-    let handler;
-
-    function onTouchStart(e) {
+    function start(e) {
+        setStarted(true);
         handler.grasp(e);
         props.onGrasp && props.onGrasp();
     }
 
-    function onTouchMove(e) {
+    function move(e) {
         handler.move(e);
         props.Drag && props.onDrag();
     }
 
-    function onTouchEnd(e) {
+    function end(e) {
         const result = handler.release(e);
+        setStarted();
         props.onDrop && props.onDrop(result);
     }
+
+    const handleStart = handler && start;
+    const handleMove = started && handler && move;
+    const handleEnd = handler && end;
 
     return <div style={{ overflowY: 'scroll' }}>
         <div
             className='container'
             ref={containerRef}
-            onTouchStart={onTouchStart}
-            onTouchMove={onTouchMove}
-            onTouchEnd={onTouchEnd}
+            onPointerDown={handleStart}
+            onPointerMove={handleMove}
+            onPointerUp={handleEnd}
             onContextMenu={preventDefault}
         >
             {props.children}
         </div>
-    </div>
+    </div >
 }
 
 //------------------------------------------------------------------------------

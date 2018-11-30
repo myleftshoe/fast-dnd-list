@@ -38,7 +38,7 @@ export default function (container, props) {
 
             if (prevent()) return;
 
-            const [x, y] = [e.touches[0].clientX, e.touches[0].clientY];
+            const [x, y] = [e.clientX, e.clientY];
 
             rafId = requestAnimationFrame(repeatUntilNextTouchMove);
 
