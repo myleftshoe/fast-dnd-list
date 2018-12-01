@@ -89,15 +89,21 @@ export default function (container, props) {
 
             enableScrolling();
 
+            // elementCache does not contain the draggable element => placeholderIndex will be out-of-range when dropping
+            // in last position. In this case, get the new y position using offsetTop + offseHeight of the last element in
+            // container.children (i.e. the bottom of the ). Bit of a hack I know.
+            // Note: Was using only container.children, offsetTop (which works for last as well) but the draggable sometimes
+            // jumoed on drop.
+
+            const element = elementCache.get(placeholderIndex) || {
+                top: container.children[placeholderIndex].offsetTop + container.children[placeholderIndex].offsetHeight
+            }
+
             try { return { oldIndex: draggableIndex, newIndex: placeholderIndex } }
 
             finally {
 
-                let unequalHeightAdjustment = 0;
-                if (draggable.direction === 'down')
-                    unequalHeightAdjustment = children[placeholderIndex].offsetHeight - draggable.element.offsetHeight;
-
-                draggable.release(0, children[placeholderIndex].offsetTop - scrollable.scrollTop + container.offsetTop + unequalHeightAdjustment);
+                draggable.release(0, element.top - draggable.dimensions.height - scrollable.scrollTop + container.offsetTop);
 
                 elementCache.resetStyles();
                 draggable = undefined;
