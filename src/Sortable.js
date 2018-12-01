@@ -11,11 +11,11 @@ export default function Sortable(props) {
     let [started, setStarted] = useState(false);
     let [usingTouch, setUsingTouch] = useState(true);
 
+    const containerRef = useRef();
+
     useEffect(() => {
         setHandler(new Handler(containerRef.current, props));
     }, [props.children]);
-
-    const containerRef = useRef();
 
     function onPointerDown(e) {
         if (e.pointerType === 'touch')
