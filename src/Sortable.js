@@ -21,7 +21,7 @@ export default function Sortable(props) {
         if (!usingTouch && started)
             document.body.addEventListener("mousemove", move);
         else
-        document.body.removeEventListener("mousemove", move);
+            document.body.removeEventListener("mousemove", move);
         return () => {
             document.body.removeEventListener("mousemove", move);
         };
