@@ -94,6 +94,8 @@ export default function Draggable(element, props) {
                     easing: 'ease-in-out',
                 });
                 animation.onfinish = () => {
+                    // The animation does not preserve its end state ->
+                    //  update the styles directly to reflect final state.
                     element.style.transition = null;
                     element.style.transform = `translate(${0}px,${0}px)`;
                     resolve();
