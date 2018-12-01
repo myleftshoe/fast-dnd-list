@@ -1,15 +1,15 @@
 body {
   margin:0;
   touch-action: none; /* allow vertical scroll but prevent swipe to go back in msEdge */
-  background-color: royalblue;
+  background-color: darkolivegreen;
   font-family: Roboto;
   overflow: hidden;
 }
 
 .container {
-  position: relative; /* Must be relative */
+  position: relative; /* Must be relative to not cutoff draggable when outside container */
   height:100vh;
-  width:calc(100% - 3px);
+  width:calc(100vw - 3px);
   overflow-x:visible;
   touch-action: pan-y;
   user-select: none;
