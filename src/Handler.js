@@ -104,6 +104,7 @@ export default function (container, props) {
 
             try { return { oldIndex: draggableIndex, newIndex: placeholderIndex } }
 
+            // Do the drop animation after reordering
             finally {
 
                 draggable.release(0, element.top - draggable.dimensions.height - scrollable.scrollTop + container.offsetTop);
