@@ -76,9 +76,12 @@ export default function (container, props) {
             }
 
             function shift({ element, translateY = 0 }) {
-                // element.style.willChange = 'transform';
-                element.style['transition'] = 'transform .2s ease-in-out';
-                element.style['transform'] = `translateY(${translateY}px)`;
+                element.style.willChange = 'transform';
+                requestAnimationFrame(() => {
+                    element.style['transition'] = 'transform .2s ease-in-out';
+                    element.style['transform'] = `translateY(${translateY}px)`;
+                    element.style.willChange = null;
+                });
             }
 
         },
