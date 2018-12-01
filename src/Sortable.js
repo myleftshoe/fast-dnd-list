@@ -25,7 +25,17 @@ export default function Sortable(props) {
         return () => {
             document.body.removeEventListener("mousemove", move);
         };
-      });
+    });
+
+    useEffect(() => {
+        if (usingTouch && started)
+            document.body.addEventListener("touchmove", move);
+        else
+            document.body.removeEventListener("touchmove", move);
+        return () => {
+            document.body.removeEventListener("touchmove", move);
+        };
+    });
 
     function handlePointerDown(e) {
         if (e.pointerType === 'touch')
@@ -61,7 +71,7 @@ export default function Sortable(props) {
     if (handler) {
         if (usingTouch) events = {
             onTouchStart: start,
-            onTouchMove: move,
+            // onTouchMove: move,
             onTouchEnd: end,
         }
         else events = {
@@ -102,7 +112,7 @@ export default function Sortable(props) {
             <div className='container' ref={containerRef}>
                 {props.children}
             </div>
-    </div >
+        </div >
     )
 }
 

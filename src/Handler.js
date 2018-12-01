@@ -12,6 +12,8 @@ export default function (container, props) {
     let rafId;
     let isHolding;
 
+    const scrollableRect = scrollable.getBoundingClientRect();
+
     return {
 
         grasp(element) {
@@ -148,7 +150,7 @@ export default function (container, props) {
         const triggerOffset = 80;
         const speedMultiplier = 0.25;
 
-        const scrollableRect = scrollable.getBoundingClientRect();
+        // const scrollableRect = scrollable.getBoundingClientRect();
         const targetRect = draggable.element.getBoundingClientRect();
         const bottomOffset = Math.min(scrollableRect.bottom, window.innerHeight) - targetRect.bottom;
         const topOffset = targetRect.top - Math.max(scrollableRect.top, 0);
