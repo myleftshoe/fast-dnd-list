@@ -46,7 +46,7 @@ export default function Sortable(props) {
 
     function start(e) {
         setStarted(true);
-        if (e.target === containerRef.current) return;
+        if (e.target.parentNode !== containerRef.current) return;
         handler.grasp(e.target);
         props.onGrasp && props.onGrasp();
     }
