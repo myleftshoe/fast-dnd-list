@@ -14,6 +14,11 @@ export default function (container, props) {
 
     const scrollableRect = scrollable.getBoundingClientRect();
 
+    const scrollableVisibleTop = function () {
+        const windowScrollY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+        return container.offsetTop - windowScrollY - scrollable.scrollTop
+    }
+
     return {
 
         grasp(element) {
@@ -109,7 +114,7 @@ export default function (container, props) {
             // Do the drop animation after reordering
             finally {
 
-                draggable.release(0, element.top - draggable.dimensions.height - scrollable.scrollTop + container.offsetTop);
+                draggable.release(0, element.top - draggable.dimensions.height + scrollableVisibleTop());
 
                 elementCache.resetStyles();
                 draggable = undefined;
