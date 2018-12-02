@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.6.3/workbox-sw.js");
 
 importScripts(
-  "/fast-dnd-list/precache-manifest.054bae590d606e9073a05d9031a7cea0.js"
+  "/fast-dnd-list/precache-manifest.ee87188fe268e651a81f0453450ab7a8.js"
 );
 
 workbox.clientsClaim();
