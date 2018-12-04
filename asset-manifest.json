@@ -1,13 +1,13 @@
 {
-  "main.css": "/fast-dnd-list/static/css/main.c9e329de.chunk.css",
-  "main.js": "/fast-dnd-list/static/js/main.2295d011.chunk.js",
-  "main.js.map": "/fast-dnd-list/static/js/main.2295d011.chunk.js.map",
+  "main.css": "/fast-dnd-list/static/css/main.385bcc34.chunk.css",
+  "main.js": "/fast-dnd-list/static/js/main.6a3a9b02.chunk.js",
+  "main.js.map": "/fast-dnd-list/static/js/main.6a3a9b02.chunk.js.map",
   "static/js/1.473cc1fe.chunk.js": "/fast-dnd-list/static/js/1.473cc1fe.chunk.js",
   "static/js/1.473cc1fe.chunk.js.map": "/fast-dnd-list/static/js/1.473cc1fe.chunk.js.map",
   "runtime~main.js": "/fast-dnd-list/static/js/runtime~main.06a6e9b2.js",
   "runtime~main.js.map": "/fast-dnd-list/static/js/runtime~main.06a6e9b2.js.map",
-  "static/css/main.c9e329de.chunk.css.map": "/fast-dnd-list/static/css/main.c9e329de.chunk.css.map",
+  "static/css/main.385bcc34.chunk.css.map": "/fast-dnd-list/static/css/main.385bcc34.chunk.css.map",
   "index.html": "/fast-dnd-list/index.html",
-  "precache-manifest.b1ad45f6d4b03cc44ec2d488daf42af9.js": "/fast-dnd-list/precache-manifest.b1ad45f6d4b03cc44ec2d488daf42af9.js",
+  "precache-manifest.fa4a071cc48c69c544e36a90b2fbfde9.js": "/fast-dnd-list/precache-manifest.fa4a071cc48c69c544e36a90b2fbfde9.js",
   "service-worker.js": "/fast-dnd-list/service-worker.js"
 }
