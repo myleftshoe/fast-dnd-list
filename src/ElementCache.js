@@ -1,11 +1,6 @@
 export default function elementCache(elements) {
 
-    const elementCache = [];
-
-    for (let i = 0; i < elements.length; i++) {
-        const element = elements[i];
-        elementCache.push({ element, top: element.offsetTop, height: element.offsetHeight, translateY: 0 });
-    }
+    const elementCache = elements.map(element => new Element(element));
 
     return {
 
@@ -30,4 +25,15 @@ export default function elementCache(elements) {
         }
     }
 
+}
+
+function Element(element) {
+    const { offsetTop, offsetHeight: height, translateY = 0 } = element;
+    return {
+        element,
+        offsetTop,
+        height,
+        translateY,
+        get top() { return this.offsetTop + this.translateY }
+    }
 }

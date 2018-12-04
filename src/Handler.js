@@ -59,7 +59,6 @@ export default function (container, props) {
                     for (placeholderIndex; placeholderIndex < elementCache.count; placeholderIndex++) {
                         const element = elementCache.get(placeholderIndex);
                         if (element.top > centerY) break;
-                        element.top -= height;
                         element.translateY -= height;
                         shift(element);
                     }
@@ -69,7 +68,6 @@ export default function (container, props) {
                         const element = elementCache.get(placeholderIndex - 1);
                         const bottom = element.top + element.height;
                         if (bottom < centerY) break;
-                        element.top += height;
                         element.translateY += height;
                         shift(element);
                     }
