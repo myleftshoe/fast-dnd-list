@@ -20,8 +20,6 @@ export default function Sortable(props) {
     useEffect(() => {
         if (!usingTouch && started)
             document.body.addEventListener("mousemove", move);
-        else
-            document.body.removeEventListener("mousemove", move);
         return () => {
             document.body.removeEventListener("mousemove", move);
         };
@@ -30,8 +28,6 @@ export default function Sortable(props) {
     useEffect(() => {
         if (usingTouch && started)
             document.body.addEventListener("touchmove", move);
-        else
-            document.body.removeEventListener("touchmove", move);
         return () => {
             document.body.removeEventListener("touchmove", move);
         };
