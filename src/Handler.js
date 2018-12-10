@@ -1,5 +1,6 @@
 import Draggable from './Draggable';
 import ElementCache from './ElementCache';
+import clamp from './utils/math.clamp';
 
 export default function (container, props) {
 
@@ -11,8 +12,6 @@ export default function (container, props) {
     let elementCache = new ElementCache(children);
     let rafId;
     let isHolding;
-
-    const scrollableRect = scrollable.getBoundingClientRect();
 
     const scrollableVisibleTop = function () {
         const windowScrollY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
@@ -153,19 +152,20 @@ export default function (container, props) {
         const triggerOffset = 80;
         const speedMultiplier = 0.25;
 
-        // const scrollableRect = scrollable.getBoundingClientRect();
-        const targetRect = draggable.element.getBoundingClientRect();
-        const bottomOffset = Math.min(scrollableRect.bottom, window.innerHeight) - targetRect.bottom;
-        const topOffset = targetRect.top - Math.max(scrollableRect.top, 0);
-        const maxScrollTop = scrollable.scrollHeight - Math.min(scrollable.clientHeight, window.innerHeight);
+        const { scrollTop, scrollHeight, clientHeight } = scrollable;
+        const bottomOffset = clientHeight - triggerOffset;
+        const topOffset = triggerOffset;
+        // const maxScrollTop = scrollHeight - Math.min(clientHeight, window.innerHeight);
+
+        const draggableY = clamp(draggable.absoluteCenter[1] - scrollTop, 0, clientHeight);
 
         let offset = 0;
-        if (bottomOffset < triggerOffset)
-            offset = Math.min(triggerOffset, triggerOffset - bottomOffset);
-        else if (topOffset < triggerOffset)
-            offset = Math.max(-triggerOffset, topOffset - triggerOffset);
+        if (draggableY > bottomOffset)
+            offset = draggableY - bottomOffset;
+        else if (draggableY < topOffset)
+            offset = draggableY - topOffset;
 
-        const top = Math.max(0, Math.min(maxScrollTop, scrollable.scrollTop + offset * speedMultiplier));
+        const top = scrollTop + offset * speedMultiplier;
 
         return [top, offset];
     }

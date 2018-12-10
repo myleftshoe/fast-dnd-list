@@ -30,6 +30,8 @@ export default function Draggable(element, props) {
         get direction() { return direction },
 
         get displacement() {
+            if (!currentPosition || !startPosition)
+                return null;
             return [
                 currentPosition[0] - startPosition[0],
                 currentPosition[1] - startPosition[1],
@@ -38,7 +40,14 @@ export default function Draggable(element, props) {
 
         get dimensions() { return dimensions },
 
+        get center() {
+            const clamp = (n, min, max) => Math.max(Math.min(n, max), min);
+            return clamp(this.absoluteCenter[1], 0, element.parentNode.clientHeight) - element.parentNode.scrollTop;
+        },
+
         get absoluteCenter() {
+            if (!this.displacement)
+                return [initialCenter[0], initialCenter[1]];
             return [initialCenter[0] + this.displacement[0], initialCenter[1] + this.displacement[1]];
         },
 
