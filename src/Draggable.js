@@ -111,6 +111,9 @@ export default function Draggable(element, props) {
                 element.classList.remove(props.dragClassName);
                 element.classList.remove('shadow');
                 element.style.transition = transitions.settleIntoPlace;
+                element.style.zIndex = null;
+                element.style.transition = null;
+                element.style.transform = null;
             });
             return event;
         },
@@ -118,11 +121,6 @@ export default function Draggable(element, props) {
         async release(x, y) {
             await this.moveIntoPlace(x, y);
             await this.settleIntoPlace();
-            element.style.position = null;
-            // element.style.pointerEvents = null;
-            element.style.zIndex = null;
-            element.style.transition = null;
-            element.style.transform = null;
         }
     }
 }
