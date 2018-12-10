@@ -6,6 +6,10 @@ export default function elementCache(elements) {
 
         get: index => elementCache[index],
 
+        find: element => elementCache.find(({ element: cachedElement }) => cachedElement === element),
+
+        indexOf: element => elementCache.findIndex(({ element: cachedElement }) => cachedElement === element),
+
         get count() { return elementCache.length },
 
         removeAt(index) { elementCache.splice(index, 1) },

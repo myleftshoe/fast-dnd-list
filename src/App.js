@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './App.css';
 import Sortable from './Sortable';
-import { move } from './array';
+import { multiMove } from './array';
 
 const generateItems = length => [...Array(length).keys()].map(k => `Item ${k}`)
 
@@ -9,7 +9,7 @@ export default function App() {
 
     let [items, setItems] = useState(generateItems(18));
 
-    const onDrop = ({ oldIndex, newIndex }) => setItems(move(items, oldIndex, newIndex));
+    const onDrop = ({ indexes, toIndex }) => setItems(multiMove(items, indexes, toIndex));
 
     return <div className='list'>
         <Sortable dragClassName='drag-style' onDrop={onDrop}>

@@ -27,10 +27,11 @@ export default function (container, props) {
 
             draggable = new Draggable(element, props);
 
-            draggableIndex = children.indexOf(draggable.element);
+            draggableIndex = elementCache.indexOf(draggable.element);
+
             placeholderIndex = draggableIndex;
 
-            elementCache.removeAt(draggableIndex);
+            // elementCache.removeAt(draggableIndex);
 
             isHolding = setTimeout(() => {
                 isHolding = undefined;
@@ -58,6 +59,7 @@ export default function (container, props) {
                 if (direction === 'down') {
                     for (placeholderIndex; placeholderIndex < elementCache.count; placeholderIndex++) {
                         const element = elementCache.get(placeholderIndex);
+                        if (element.element === draggable.element) continue;
                         if (element.top > centerY) break;
                         element.translateY -= height;
                         shift(element);
@@ -66,6 +68,7 @@ export default function (container, props) {
                 else if (direction === 'up') {
                     for (placeholderIndex; placeholderIndex > 0; placeholderIndex--) {
                         const element = elementCache.get(placeholderIndex - 1);
+                        if (element.element === draggable.element) continue;
                         const bottom = element.top + element.height;
                         if (bottom < centerY) break;
                         element.translateY += height;
@@ -93,26 +96,28 @@ export default function (container, props) {
 
         release(e) {
 
-            if (prevent()) return {};
+            if (prevent()) return null;
 
             enableScrolling();
 
-            // elementCache does not contain the draggable element => placeholderIndex will be out-of-range when dropping
-            // in last position. In this case, get the new y position using offsetTop + offseHeight of the last element in
-            // container.children (i.e. the bottom of the ). Bit of a hack I know.
-            // Note: Was using only container.children, offsetTop (which works for last as well) but the draggable sometimes
-            // jumoed on drop.
-
-            const element = elementCache.get(placeholderIndex) || {
-                top: container.children[placeholderIndex].offsetTop + container.children[placeholderIndex].offsetHeight
+            let targetY;
+            if (placeholderIndex < elementCache.count) {
+                targetY = elementCache.get(placeholderIndex).top;
+            }
+            else {
+                const { offsetTop, height } = elementCache.get(placeholderIndex - 1);
+                targetY = offsetTop + draggable.margins.top + height;
             }
 
-            try { return { oldIndex: draggableIndex, newIndex: placeholderIndex } }
+            targetY = targetY - draggable.dimensions.height + scrollableVisibleTop();
+
+
+            try { return { indexes: [draggableIndex], toIndex: placeholderIndex } }
 
             // Do the drop animation after reordering
             finally {
 
-                draggable.release(0, element.top - draggable.dimensions.height + scrollableVisibleTop());
+                draggable.release(0, targetY);
 
                 elementCache.resetStyles();
                 draggable = undefined;
@@ -160,7 +165,7 @@ export default function (container, props) {
         // const maxScrollTop = scrollHeight - Math.min(clientHeight, window.innerHeight);
 
         const draggableY = clamp(draggable.absoluteCenter[1] - scrollTop, 0, clientHeight);
-        console.log(draggableY, clientHeight);
+        // console.log(draggableY, clientHeight);
 
         let offset = 0;
         if (draggableY > bottomOffset)

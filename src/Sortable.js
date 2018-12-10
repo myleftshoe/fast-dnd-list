@@ -59,7 +59,7 @@ export default function Sortable(props) {
     function end() {
         const result = handler.release();
         setStarted(false);
-        props.onDrop && props.onDrop(result);
+        result && props.onDrop && props.onDrop(result);
     }
 
     let events = {};
