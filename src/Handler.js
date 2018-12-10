@@ -12,6 +12,7 @@ export default function (container, props) {
     let elementCache = new ElementCache(children);
     let rafId;
     let isHolding;
+    const maxScrollableHeight = scrollable.scrollHeight;
 
     const scrollableVisibleTop = function () {
         const windowScrollY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
@@ -50,7 +51,7 @@ export default function (container, props) {
 
                 const [scrollTop, scrollOffset] = getScrollValue();
                 scrollable.scrollTop = scrollTop;
-                draggable.position = [x, y + scrollTop];
+                draggable.position = [x, clamp(y + scrollTop, 0, maxScrollableHeight)];
 
                 const { direction, dimensions: { height }, absoluteCenter: [, centerY] } = draggable;
 
@@ -152,12 +153,14 @@ export default function (container, props) {
         const triggerOffset = 80;
         const speedMultiplier = 0.25;
 
-        const { scrollTop, scrollHeight, clientHeight } = scrollable;
+        const { scrollTop, clientHeight } = scrollable;
+
         const bottomOffset = clientHeight - triggerOffset;
         const topOffset = triggerOffset;
         // const maxScrollTop = scrollHeight - Math.min(clientHeight, window.innerHeight);
 
         const draggableY = clamp(draggable.absoluteCenter[1] - scrollTop, 0, clientHeight);
+        console.log(draggableY, clientHeight);
 
         let offset = 0;
         if (draggableY > bottomOffset)

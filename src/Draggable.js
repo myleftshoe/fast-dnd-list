@@ -17,10 +17,17 @@ export default function Draggable(element, props) {
     const { offsetLeft: left, offsetTop: top, offsetHeight: height, offsetWidth: width } = element;
     const { marginTop, marginBottom, marginLeft, marginRight } = window.getComputedStyle(element);
 
-    const initialCenter = [left + width / 2, top + height / 2];
+    const margins = {
+        top: parseInt(marginTop),
+        bottom: parseInt(marginBottom),
+        left: parseInt(marginLeft),
+        right: parseInt(marginRight),
+    };
+
+    const initialCenter = [left + width / 2 + margins.left, top + height / 2 + margins.top];
     const dimensions = {
-        width: width + Math.max(parseInt(marginLeft), parseInt(marginRight)),
-        height: height + Math.max(parseInt(marginTop), parseInt(marginBottom)),
+        width: width + Math.max(margins.left, margins.right),
+        height: height + Math.max(margins.top, margins.bottom),
     }
 
     return {
@@ -51,14 +58,7 @@ export default function Draggable(element, props) {
             return [initialCenter[0] + this.displacement[0], initialCenter[1] + this.displacement[1]];
         },
 
-        get margins() {
-            return {
-                top: parseInt(marginTop),
-                bottom: parseInt(marginBottom),
-                left: parseInt(marginLeft),
-                right: parseInt(marginRight),
-            }
-        },
+        get margins() { return margins },
         // get absoluteCenter() {
         //     const { left, top, height, width } = element.getBoundingClientRect();
         //     return [left + width / 2, top + height / 2];
