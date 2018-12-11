@@ -12,7 +12,8 @@ export default function (container, props) {
     let elementCache = new ElementCache(children);
     let rafId;
     let isHolding;
-    const scrollHeight = scrollable.scrollHeight;
+    const { scrollHeight, clientHeight } = scrollable;
+    let scrollTop = scrollable.scrollTop;
     let lastCenterY = null;
 
     const scrollableVisibleTop = function () {
@@ -53,8 +54,7 @@ export default function (container, props) {
             function domReadThenWrite() {
 
                 const { direction, dimensions: { height }, absoluteCenter: [, centerY] } = draggable;
-                const [scrollTop, scrollOffset] = getScrollValue();
-
+                scrollTop = getScrollValue()[0];
                 rafId = requestAnimationFrame(repeatUntilNextTouchMove);
 
                 function repeatUntilNextTouchMove() {
@@ -164,7 +164,7 @@ export default function (container, props) {
         const triggerOffset = 100;
         const speedMultiplier = 0.25;
 
-        const { scrollTop, clientHeight } = scrollable;
+        // const scrollTop = scrollable.scrollTop;
 
         const bottomOffset = clientHeight - triggerOffset;
         const topOffset = triggerOffset;

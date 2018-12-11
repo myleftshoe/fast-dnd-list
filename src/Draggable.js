@@ -71,7 +71,7 @@ export default function Draggable(element, props) {
             if (!startPosition)
                 startPosition = currentPosition;
             const [x, y] = this.displacement;
-            element.style.transform = `translate(${x}px,${y}px)`;
+            element.style.transform = `translate3d(${x}px,${y}px,0px)`;
         },
 
         get position() { return currentPosition },
