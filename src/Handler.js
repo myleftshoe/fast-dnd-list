@@ -12,7 +12,8 @@ export default function (container, props) {
     let elementCache = new ElementCache(children);
     let rafId;
     let isHolding;
-    const maxScrollableHeight = scrollable.scrollHeight;
+    const scrollHeight = scrollable.scrollHeight;
+    let lastCenterY = null;
 
     const scrollableVisibleTop = function () {
         const windowScrollY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
@@ -48,17 +49,18 @@ export default function (container, props) {
             rafId = requestAnimationFrame(repeatUntilNextTouchMove);
 
             // Allows auto scroll to continue when draggable is held in same place
-            let lastCenterY = null;
             function repeatUntilNextTouchMove() {
 
                 const { direction, dimensions: { height }, absoluteCenter: [, centerY] } = draggable;
 
-                if (centerY === lastCenterY) return;
-                lastCenterY = centerY;
 
                 const [scrollTop, scrollOffset] = getScrollValue();
                 scrollable.scrollTop = scrollTop;
-                draggable.position = [x, clamp(y + scrollTop, 0, maxScrollableHeight)];
+
+                draggable.position = [x, clamp(y + scrollTop, 0, scrollHeight)];
+
+                if (Math.trunc(centerY) === Math.trunc(lastCenterY)) return;
+                lastCenterY = centerY;
 
 
                 if (direction === 'down') {
@@ -160,7 +162,7 @@ export default function (container, props) {
 
     function getScrollValue() {
 
-        const triggerOffset = 80;
+        const triggerOffset = 100;
         const speedMultiplier = 0.25;
 
         const { scrollTop, clientHeight } = scrollable;
@@ -179,7 +181,7 @@ export default function (container, props) {
             offset = draggableY - topOffset;
 
         const top = scrollTop + offset * speedMultiplier;
-        console.log(top, offset, scrollTop);
+        // console.log(top, offset, scrollTop);
         return [top, offset];
     }
 
