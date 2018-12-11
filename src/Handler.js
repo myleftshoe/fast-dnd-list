@@ -46,48 +46,53 @@ export default function (container, props) {
 
             if (prevent()) return;
 
-            rafId = requestAnimationFrame(repeatUntilNextTouchMove);
+            domReadThenWrite();
 
             // Allows auto scroll to continue when draggable is held in same place
-            function repeatUntilNextTouchMove() {
+
+            function domReadThenWrite() {
 
                 const { direction, dimensions: { height }, absoluteCenter: [, centerY] } = draggable;
-
-
                 const [scrollTop, scrollOffset] = getScrollValue();
-                scrollable.scrollTop = scrollTop;
 
-                draggable.position = [x, clamp(y + scrollTop, 0, scrollHeight)];
+                rafId = requestAnimationFrame(repeatUntilNextTouchMove);
 
-                if (Math.trunc(centerY) === Math.trunc(lastCenterY)) return;
-                lastCenterY = centerY;
+                function repeatUntilNextTouchMove() {
 
+                    scrollable.scrollTop = scrollTop;
 
-                if (direction === 'down') {
-                    for (placeholderIndex; placeholderIndex < elementCache.count; placeholderIndex++) {
-                        const element = elementCache.get(placeholderIndex);
-                        if (element.element === draggable.element) continue;
-                        if (element.top > centerY) break;
-                        element.translateY -= height;
-                        shift(element);
+                    draggable.position = [x, clamp(y + scrollTop, 0, scrollHeight)];
+
+                    if (Math.trunc(centerY) === Math.trunc(lastCenterY) ||
+                        (placeholderIndex < 0 || placeholderIndex > elementCache.count)
+                    ) {
+                        cancelAnimationFrame(rafId);
+                        return;
                     }
-                }
-                else if (direction === 'up') {
-                    for (placeholderIndex; placeholderIndex > 0; placeholderIndex--) {
-                        const element = elementCache.get(placeholderIndex - 1);
-                        if (element.element === draggable.element) continue;
-                        const bottom = element.top + element.height;
-                        if (bottom < centerY) break;
-                        element.translateY += height;
-                        shift(element);
+                    lastCenterY = centerY;
+
+                    if (direction === 'down') {
+                        for (placeholderIndex; placeholderIndex < elementCache.count; placeholderIndex++) {
+                            const element = elementCache.get(placeholderIndex);
+                            if (element.element === draggable.element) continue;
+                            if (element.top > centerY) break;
+                            element.translateY -= height;
+                            shift(element);
+                        }
                     }
+                    else if (direction === 'up') {
+                        for (placeholderIndex; placeholderIndex > 0; placeholderIndex--) {
+                            const element = elementCache.get(placeholderIndex - 1);
+                            if (element.element === draggable.element) continue;
+                            const bottom = element.top + element.height;
+                            if (bottom < centerY) break;
+                            element.translateY += height;
+                            shift(element);
+                        }
+                    }
+
+                    domReadThenWrite();
                 }
-
-                if (placeholderIndex <= 0 || placeholderIndex >= elementCache.count)
-                    cancelAnimationFrame(rafId);
-                else
-                    rafId = requestAnimationFrame(repeatUntilNextTouchMove);
-
             }
 
             function shift({ element, translateY = 0 }) {
@@ -116,10 +121,17 @@ export default function (container, props) {
                 targetY = offsetTop + draggable.margins.top + height;
             }
 
-            targetY = targetY - draggable.dimensions.height + scrollableVisibleTop();
+            targetY = targetY + scrollableVisibleTop();
 
+            if (placeholderIndex !== draggableIndex)
+                targetY -= draggable.dimensions.height;
 
-            try { return { indexes: [draggableIndex], toIndex: placeholderIndex } }
+            try {
+
+                if (placeholderIndex === draggableIndex) return null;
+
+                return { indexes: [draggableIndex], toIndex: placeholderIndex }
+            }
 
             // Do the drop animation after reordering
             finally {
