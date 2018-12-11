@@ -48,13 +48,18 @@ export default function (container, props) {
             rafId = requestAnimationFrame(repeatUntilNextTouchMove);
 
             // Allows auto scroll to continue when draggable is held in same place
+            let lastCenterY = null;
             function repeatUntilNextTouchMove() {
+
+                const { direction, dimensions: { height }, absoluteCenter: [, centerY] } = draggable;
+
+                if (centerY === lastCenterY) return;
+                lastCenterY = centerY;
 
                 const [scrollTop, scrollOffset] = getScrollValue();
                 scrollable.scrollTop = scrollTop;
                 draggable.position = [x, clamp(y + scrollTop, 0, maxScrollableHeight)];
 
-                const { direction, dimensions: { height }, absoluteCenter: [, centerY] } = draggable;
 
                 if (direction === 'down') {
                     for (placeholderIndex; placeholderIndex < elementCache.count; placeholderIndex++) {
@@ -76,7 +81,7 @@ export default function (container, props) {
                     }
                 }
 
-                if (placeholderIndex <= 0 || placeholderIndex >= elementCache.count || scrollOffset === 0)
+                if (placeholderIndex <= 0 || placeholderIndex >= elementCache.count)
                     cancelAnimationFrame(rafId);
                 else
                     rafId = requestAnimationFrame(repeatUntilNextTouchMove);
@@ -170,11 +175,11 @@ export default function (container, props) {
         let offset = 0;
         if (draggableY > bottomOffset)
             offset = draggableY - bottomOffset;
-        else if (draggableY < topOffset)
+        else if (draggableY < topOffset && scrollTop > 0)
             offset = draggableY - topOffset;
 
         const top = scrollTop + offset * speedMultiplier;
-
+        console.log(top, offset, scrollTop);
         return [top, offset];
     }
 
