@@ -63,16 +63,13 @@ export default function (container, props) {
 
                     draggable.position = [x, clamp(y + scrollTop, 0, scrollHeight)];
 
-                    if (Math.trunc(centerY) === Math.trunc(lastCenterY) ||
-                        (placeholderIndex < 0 || placeholderIndex > elementCache.count)
-                    ) {
-                        cancelAnimationFrame(rafId);
+                    if (Math.trunc(centerY) === Math.trunc(lastCenterY))
                         return;
-                    }
+
                     lastCenterY = centerY;
 
                     if (direction === 'down') {
-                        for (placeholderIndex; placeholderIndex < elementCache.count; placeholderIndex++) {
+                        for (placeholderIndex; placeholderIndex < elementCache.count - 1; placeholderIndex++) {
                             const element = elementCache.get(placeholderIndex);
                             if (element.element === draggable.element) continue;
                             if (element.top > centerY) break;
@@ -112,16 +109,7 @@ export default function (container, props) {
 
             enableScrolling();
 
-            let targetY;
-            if (placeholderIndex < elementCache.count) {
-                targetY = elementCache.get(placeholderIndex).top;
-            }
-            else {
-                const { offsetTop, height } = elementCache.get(placeholderIndex - 1);
-                targetY = offsetTop + draggable.margins.top + height;
-            }
-
-            targetY = targetY + scrollableVisibleTop();
+            let targetY = elementCache.get(placeholderIndex).top + scrollableVisibleTop();
 
             if (placeholderIndex !== draggableIndex)
                 targetY -= draggable.dimensions.height;
@@ -132,7 +120,6 @@ export default function (container, props) {
 
                 return { indexes: [draggableIndex], toIndex: placeholderIndex }
             }
-
             // Do the drop animation after reordering
             finally {
 

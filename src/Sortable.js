@@ -107,6 +107,7 @@ export default function Sortable(props) {
         >
             <div className='container' ref={containerRef}>
                 {props.children}
+                {React.cloneElement(props.children[0], { style: { visibility: 'hidden' } }, null)}
             </div>
         </div >
     )
