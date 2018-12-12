@@ -8,8 +8,7 @@ export default function (container, props) {
     let draggable;
     let draggableIndex;
     let placeholderIndex;
-    const children = Array.from(container.children);
-    let elementCache = new ElementCache(children);
+    let elementCache = new ElementCache(Array.from(container.children));
     let rafId;
     let isHolding;
     const { scrollHeight, clientHeight } = scrollable;
@@ -37,6 +36,7 @@ export default function (container, props) {
 
             isHolding = setTimeout(() => {
                 isHolding = undefined;
+                scrollTop = scrollable.scrollTop;
                 disableScrolling();
                 draggable.grasp();
             }, 300);
@@ -55,11 +55,9 @@ export default function (container, props) {
             function repeatUntilNextTouchMove() {
 
                 const { direction, dimensions: { height }, absoluteCenter: [, centerY] } = draggable;
-                scrollTop = getScrollValue()[0];
+                setScrollTop();
 
-                scrollable.scrollTop = scrollTop;
-
-                draggable.position = [x, clamp(y + scrollTop, 0, scrollHeight)];
+                draggable.position = [x, clamp(y + scrollTop, 0, scrollHeight - draggable.dimensions.height)];
 
                 if (Math.trunc(centerY) === Math.trunc(lastCenterY))
                     return;
@@ -155,19 +153,15 @@ export default function (container, props) {
         return false;
     }
 
-    function getScrollValue() {
+    function setScrollTop() {
 
         const triggerOffset = 100;
         const speedMultiplier = 0.25;
 
-        // const scrollTop = scrollable.scrollTop;
+        const bottomOffset = clientHeight - triggerOffset + scrollTop;
+        const topOffset = triggerOffset + scrollTop;
 
-        const bottomOffset = clientHeight - triggerOffset;
-        const topOffset = triggerOffset;
-        // const maxScrollTop = scrollHeight - Math.min(clientHeight, window.innerHeight);
-
-        const draggableY = clamp(draggable.absoluteCenter[1] - scrollTop, 0, clientHeight);
-        // console.log(draggableY, clientHeight);
+        const draggableY = draggable.absoluteCenter[1];
 
         let offset = 0;
         if (draggableY > bottomOffset)
@@ -175,9 +169,9 @@ export default function (container, props) {
         else if (draggableY < topOffset && scrollTop > 0)
             offset = draggableY - topOffset;
 
-        const top = scrollTop + offset * speedMultiplier;
-        // console.log(top, offset, scrollTop);
-        return [top, offset];
+        scrollTop = scrollTop + offset * speedMultiplier;
+        scrollable.scrollTop = scrollTop;
+
     }
 
 }
