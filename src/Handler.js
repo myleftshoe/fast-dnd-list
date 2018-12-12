@@ -5,15 +5,21 @@ import clamp from './utils/math.clamp';
 export default function (container, props) {
 
     const scrollable = container.parentNode;
+
     let draggable;
     let draggableIndex;
+
     let placeholderIndex;
-    let elementCache = new ElementCache(Array.from(container.children));
+    const elementCache = new ElementCache(Array.from(container.children));
+
     let rafId;
     let isHolding;
+
     const { scrollHeight, clientHeight } = scrollable;
     let scrollTop = scrollable.scrollTop;
+
     let lastCenterY = null;
+    let lastScrollTop = null;
 
     const scrollableVisibleTop = function () {
         const windowScrollY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
@@ -59,10 +65,9 @@ export default function (container, props) {
 
                 draggable.position = [x, clamp(y + scrollTop, 0, scrollHeight - draggable.dimensions.height)];
 
-                if (Math.trunc(centerY) === Math.trunc(lastCenterY))
-                    return;
-
+                if (Math.trunc(centerY) === Math.trunc(lastCenterY)) return;
                 lastCenterY = centerY;
+
 
                 if (direction === 'down') {
                     for (placeholderIndex; placeholderIndex < elementCache.count - 1; placeholderIndex++) {
@@ -83,7 +88,13 @@ export default function (container, props) {
                         shift(element);
                     }
                 }
+
+
+                if (Math.trunc(scrollTop) === Math.trunc(lastScrollTop)) return;
+                lastScrollTop = scrollTop;
+
                 rafId = requestAnimationFrame(repeatUntilNextTouchMove);
+
             }
 
             function shift({ element, translateY = 0 }) {
