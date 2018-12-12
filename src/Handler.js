@@ -21,11 +21,6 @@ export default function (container, props) {
     let lastCenterY = null;
     let lastScrollTop = null;
 
-    const scrollableVisibleTop = function () {
-        const windowScrollY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
-        return container.offsetTop - windowScrollY - scrollable.scrollTop
-    }
-
     return {
 
         grasp(element) {
@@ -97,15 +92,6 @@ export default function (container, props) {
 
             }
 
-            function shift({ element, translateY = 0 }) {
-                // element.style.willChange = 'transform';
-                // requestAnimationFrame(() => {
-                element.style['transition'] = 'transform .2s ease-in-out';
-                element.style['transform'] = `translateY(${translateY}px)`;
-                //     element.style.willChange = null;
-                // });
-            }
-
         },
 
         release(e) {
@@ -135,6 +121,20 @@ export default function (container, props) {
 
             }
         },
+    }
+
+    function scrollableVisibleTop() {
+        const windowScrollY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+        return container.offsetTop - windowScrollY - scrollable.scrollTop
+    }
+
+    function shift({ element, translateY = 0 }) {
+        // element.style.willChange = 'transform';
+        // requestAnimationFrame(() => {
+        element.style['transition'] = 'transform .2s ease-in-out';
+        element.style['transform'] = `translateY(${translateY}px)`;
+        //     element.style.willChange = null;
+        // });
     }
 
     function disableScrolling() {
