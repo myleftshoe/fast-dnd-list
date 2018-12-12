@@ -47,49 +47,45 @@ export default function (container, props) {
 
             if (prevent()) return;
 
-            domReadThenWrite();
+            rafId = requestAnimationFrame(repeatUntilNextTouchMove);
 
             // Allows auto scroll to continue when draggable is held in same place
 
-            function domReadThenWrite() {
+
+            function repeatUntilNextTouchMove() {
 
                 const { direction, dimensions: { height }, absoluteCenter: [, centerY] } = draggable;
                 scrollTop = getScrollValue()[0];
-                rafId = requestAnimationFrame(repeatUntilNextTouchMove);
 
-                function repeatUntilNextTouchMove() {
+                scrollable.scrollTop = scrollTop;
 
-                    scrollable.scrollTop = scrollTop;
+                draggable.position = [x, clamp(y + scrollTop, 0, scrollHeight)];
 
-                    draggable.position = [x, clamp(y + scrollTop, 0, scrollHeight)];
+                if (Math.trunc(centerY) === Math.trunc(lastCenterY))
+                    return;
 
-                    if (Math.trunc(centerY) === Math.trunc(lastCenterY))
-                        return;
+                lastCenterY = centerY;
 
-                    lastCenterY = centerY;
-
-                    if (direction === 'down') {
-                        for (placeholderIndex; placeholderIndex < elementCache.count - 1; placeholderIndex++) {
-                            const element = elementCache.get(placeholderIndex);
-                            if (element.element === draggable.element) continue;
-                            if (element.top > centerY) break;
-                            element.translateY -= height;
-                            shift(element);
-                        }
+                if (direction === 'down') {
+                    for (placeholderIndex; placeholderIndex < elementCache.count - 1; placeholderIndex++) {
+                        const element = elementCache.get(placeholderIndex);
+                        if (element.element === draggable.element) continue;
+                        if (element.top > centerY) break;
+                        element.translateY -= height;
+                        shift(element);
                     }
-                    else if (direction === 'up') {
-                        for (placeholderIndex; placeholderIndex > 0; placeholderIndex--) {
-                            const element = elementCache.get(placeholderIndex - 1);
-                            if (element.element === draggable.element) continue;
-                            const bottom = element.top + element.height;
-                            if (bottom < centerY) break;
-                            element.translateY += height;
-                            shift(element);
-                        }
-                    }
-
-                    domReadThenWrite();
                 }
+                else if (direction === 'up') {
+                    for (placeholderIndex; placeholderIndex > 0; placeholderIndex--) {
+                        const element = elementCache.get(placeholderIndex - 1);
+                        if (element.element === draggable.element) continue;
+                        const bottom = element.top + element.height;
+                        if (bottom < centerY) break;
+                        element.translateY += height;
+                        shift(element);
+                    }
+                }
+                rafId = requestAnimationFrame(repeatUntilNextTouchMove);
             }
 
             function shift({ element, translateY = 0 }) {
