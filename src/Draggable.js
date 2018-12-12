@@ -1,6 +1,7 @@
 import './Draggable.css';
 import { fireAndForget } from './events';
 import 'web-animations-js/web-animations.min';
+import clamp from './utils/math.clamp';
 
 const transitions = {
     grasp: 'box-shadow .2s ease-in-out, background-color .2s ease-in-out',
@@ -48,7 +49,6 @@ export default function Draggable(element, props) {
         get dimensions() { return dimensions },
 
         get center() {
-            const clamp = (n, min, max) => Math.max(Math.min(n, max), min);
             return clamp(this.absoluteCenter[1], 0, element.parentNode.clientHeight) - element.parentNode.scrollTop;
         },
 
