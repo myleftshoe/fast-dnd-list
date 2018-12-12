@@ -24,7 +24,7 @@ export default function Draggable(element, props) {
         right: parseInt(marginRight),
     };
 
-    const initialCenter = [left + width / 2 + margins.left, top + height / 2 + margins.top];
+    const initialCenter = [left + width / 2, top + height / 2];
     const dimensions = {
         width: width + Math.max(margins.left, margins.right),
         height: height + Math.max(margins.top, margins.bottom),
