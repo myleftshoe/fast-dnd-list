@@ -19,7 +19,6 @@ export default function (container, props) {
     let scrollTop = scrollable.scrollTop;
 
     let lastCenterY = null;
-    let lastScrollTop = null;
 
     return {
 
@@ -56,13 +55,13 @@ export default function (container, props) {
             function repeatUntilNextTouchMove() {
 
                 const { direction, dimensions: { height }, absoluteCenter: [, centerY] } = draggable;
-                setScrollTop();
+
+                const autoscroll = autoScroll();
 
                 draggable.position = [x, clamp(y + scrollTop, 0, scrollHeight - draggable.dimensions.height)];
 
                 if (Math.trunc(centerY) === Math.trunc(lastCenterY)) return;
                 lastCenterY = centerY;
-
 
                 if (direction === 'down') {
                     for (placeholderIndex; placeholderIndex < elementCache.count - 1; placeholderIndex++) {
@@ -84,11 +83,8 @@ export default function (container, props) {
                     }
                 }
 
-
-                if (Math.trunc(scrollTop) === Math.trunc(lastScrollTop)) return;
-                lastScrollTop = scrollTop;
-
-                rafId = requestAnimationFrame(repeatUntilNextTouchMove);
+                if (autoscroll)
+                    rafId = requestAnimationFrame(repeatUntilNextTouchMove);
 
             }
 
@@ -164,7 +160,7 @@ export default function (container, props) {
         return false;
     }
 
-    function setScrollTop() {
+    function autoScroll() {
 
         const triggerOffset = 100;
         const speedMultiplier = 0.25;
@@ -183,6 +179,7 @@ export default function (container, props) {
         scrollTop = scrollTop + offset * speedMultiplier;
         scrollable.scrollTop = scrollTop;
 
+        return Boolean(offset);
     }
 
 }
