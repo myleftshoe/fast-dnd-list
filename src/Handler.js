@@ -78,7 +78,7 @@ export default function (container, props) {
                         if (element.element === draggable.element) continue;
                         const bottom = element.top + element.height;
                         if (bottom < centerY) break;
-                        shift(element, height);
+                        shift(element, +height);
                         element.translateY += height;
                     }
                 }
@@ -124,34 +124,14 @@ export default function (container, props) {
         return container.offsetTop - windowScrollY - scrollable.scrollTop
     }
 
-    // Using animate prevents stutter of msEdge mobile when drag direction changed.
     function shift({ element, translateY = 0 }, distance) {
-
-        const keyframes = [
-            { transform: `translateY(${translateY}px)` },
-            { transform: `translateY(${translateY + distance}px)` },
-        ];
-        const animation = element.animate(keyframes, {
-            duration: 200,
-            easing: 'ease-in-out',
-            // fill: 'forwards'
-        });
-        animation.onfinish = () => {
-            // The animation does not preserve its end state ->
-            //  update the styles directly to reflect final state.
-            element.style.transition = null;
-            element.style.transform = `translateY(${translateY + distance}px)`;
-        }
+        // element.style.willChange = 'transform';
+        // requestAnimationFrame(() => {
+        element.style['transition'] = 'transform .2s ease-in-out';
+        element.style['transform'] = `translateY(${translateY + distance}px)`;
+        //     element.style.willChange = null;
+        // });
     }
-
-    // function shift({ element, translateY = 0 }) {
-    //     // element.style.willChange = 'transform';
-    //     // requestAnimationFrame(() => {
-    //     element.style['transition'] = 'transform .2s ease-in-out';
-    //     element.style['transform'] = `translateY(${translateY}px)`;
-    //     //     element.style.willChange = null;
-    //     // });
-    // }
 
     function disableScrolling() {
         scrollable.style.overflowY = 'hidden';
