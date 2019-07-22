@@ -1,13 +1,15 @@
 {
-  "main.css": "/fast-dnd-list/static/css/main.5d15f828.chunk.css",
-  "main.js": "/fast-dnd-list/static/js/main.ee174982.chunk.js",
-  "main.js.map": "/fast-dnd-list/static/js/main.ee174982.chunk.js.map",
-  "static/js/1.0d765608.chunk.js": "/fast-dnd-list/static/js/1.0d765608.chunk.js",
-  "static/js/1.0d765608.chunk.js.map": "/fast-dnd-list/static/js/1.0d765608.chunk.js.map",
-  "runtime~main.js": "/fast-dnd-list/static/js/runtime~main.06a6e9b2.js",
-  "runtime~main.js.map": "/fast-dnd-list/static/js/runtime~main.06a6e9b2.js.map",
-  "static/css/main.5d15f828.chunk.css.map": "/fast-dnd-list/static/css/main.5d15f828.chunk.css.map",
-  "index.html": "/fast-dnd-list/index.html",
-  "precache-manifest.bd5182f65422c16c114a536dae48873a.js": "/fast-dnd-list/precache-manifest.bd5182f65422c16c114a536dae48873a.js",
-  "service-worker.js": "/fast-dnd-list/service-worker.js"
+  "files": {
+    "main.css": "/fast-dnd-list/static/css/main.1d6d64e1.chunk.css",
+    "main.js": "/fast-dnd-list/static/js/main.c331c4e3.chunk.js",
+    "main.js.map": "/fast-dnd-list/static/js/main.c331c4e3.chunk.js.map",
+    "runtime~main.js": "/fast-dnd-list/static/js/runtime~main.66a34e2e.js",
+    "runtime~main.js.map": "/fast-dnd-list/static/js/runtime~main.66a34e2e.js.map",
+    "static/js/2.05431fa7.chunk.js": "/fast-dnd-list/static/js/2.05431fa7.chunk.js",
+    "static/js/2.05431fa7.chunk.js.map": "/fast-dnd-list/static/js/2.05431fa7.chunk.js.map",
+    "index.html": "/fast-dnd-list/index.html",
+    "precache-manifest.a0b15c5bb863537744592ee484c4ac72.js": "/fast-dnd-list/precache-manifest.a0b15c5bb863537744592ee484c4ac72.js",
+    "service-worker.js": "/fast-dnd-list/service-worker.js",
+    "static/css/main.1d6d64e1.chunk.css.map": "/fast-dnd-list/static/css/main.1d6d64e1.chunk.css.map"
+  }
 }
